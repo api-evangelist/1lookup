@@ -1,0 +1,91 @@
+name: 1Lookup
+description: >-
+  Data intelligence platform offering 34 products through one REST API covering phone/email/IP validation, fraud
+  detection, B2B contact & company data, SEO/web intelligence, and more. Also provides a hosted MCP server and llms.txt
+  for AI/agent consumption.
+url: https://1lookup.apievangelist.com/apis.yml
+created: '2026-08-08'
+modified: '2026-08-08'
+specificationVersion: '0.21'
+tags:
+  - phone validation
+  - email validation
+  - IP intelligence
+  - fraud & risk
+  - data enrichment
+  - B2B contact & company data
+  - SEO / web analytics
+  - audio transcription
+  - MCP / agent-native
+  - REST API
+apis:
+  - name: 1Lookup REST API
+    description: >-
+      RESTful API over HTTPS covering all 1Lookup products (phone/email/IP validation, fraud, enrichment, B2B data, SEO
+      intelligence). API-key Bearer auth, JSON bodies, job-based bulk processing.
+    humanURL: https://app.1lookup.io/api
+    baseURL: https://app.1lookup.io/api/v1
+    tags:
+      - phone validation
+      - email validation
+      - IP intelligence
+      - fraud & risk
+      - data enrichment
+      - B2B contact & company data
+      - SEO / web analytics
+      - audio transcription
+      - MCP / agent-native
+      - REST API
+    properties:
+      - type: Documentation
+        url: https://app.1lookup.io/api
+  - name: 1Lookup MCP Server
+    description: >-
+      Hosted/remote MCP connector with OAuth 2.1 auth exposing 5 tools (validate_phone, verify_email, ip_lookup,
+      bulk_verify, get_account) for Claude, Cursor, ChatGPT, and any MCP client.
+    humanURL: https://www.1lookup.io/products/mcp
+    baseURL: https://app.1lookup.io/api/mcp
+    tags:
+      - phone validation
+      - email validation
+      - IP intelligence
+      - fraud & risk
+      - data enrichment
+      - B2B contact & company data
+      - SEO / web analytics
+      - audio transcription
+      - MCP / agent-native
+      - REST API
+    properties:
+      - type: MCPServer
+        url: https://app.1lookup.io/api/mcp
+      - type: Documentation
+        url: https://app.1lookup.io/api
+  - name: 1Lookup LLMs Index
+    description: Machine-readable content indexes (llms.txt and llms-full.txt) for AI/answer engines.
+    humanURL: https://www.1lookup.io
+    baseURL: https://www.1lookup.io
+    tags:
+      - phone validation
+      - email validation
+      - IP intelligence
+      - fraud & risk
+      - data enrichment
+      - B2B contact & company data
+      - SEO / web analytics
+      - audio transcription
+      - MCP / agent-native
+      - REST API
+    properties:
+      - type: LLMsTxt
+        url: https://www.1lookup.io/llms.txt
+      - type: LLMsTxt
+        url: https://www.1lookup.io/llms-full.txt
+maintainers:
+  - FN: 1Lookup
+    url: https://www.1lookup.io
+generated:
+  by: apis.io/add
+  model: claude-opus-4-8
+  confidence: 93
+  at: '2026-08-08T11:53:32.811Z'
