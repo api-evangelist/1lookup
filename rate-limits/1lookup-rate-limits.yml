@@ -1,0 +1,62 @@
+specification: API Commons Rate Limits
+specificationVersion: '0.1'
+provider: 1Lookup
+providerId: 1lookup
+generated: '2026-08-09'
+method: searched
+created: '2026-08-09'
+modified: '2026-08-09'
+tags:
+  - Rate Limiting
+  - Data Validation
+description: >-
+  1Lookup enforces a single flat request rate limit of 1,000 requests per minute, applied per
+  organization and reset every minute, on top of a separate universal-credit budget set by the plan.
+  Every response carries X-RateLimit-* headers. Bulk-job status and result polling are explicitly
+  excluded from the lookup-rate budget.
+sources:
+  - https://app.1lookup.io/api
+  - https://www.1lookup.io/pricing
+headers:
+  limit: X-RateLimit-Limit
+  remaining: X-RateLimit-Remaining
+  reset: X-RateLimit-Reset
+responseCodes:
+  throttled: 429
+  insufficientCredits: 402
+limits:
+  - name: API requests
+    scope: organization
+    metric: requests_per_minute
+    limit: 1000
+    timeFrame: minute
+    plans: all
+    notes: Applied per organization and reset every minute.
+  - name: Bulk job status and result polling
+    scope: organization
+    metric: requests_per_minute
+    limit: -1
+    timeFrame: minute
+    notes: Status and result polling do not consume lookup-rate budget.
+quotas:
+  - name: Universal credits
+    scope: organization
+    metric: credits_per_month
+    description: >-
+      Separate from the request rate limit. Core validations (phone, email, IP, spam, number type, search
+      intent) cost 1 credit; enrichment and intelligence products cost 2-86 credits. Unused subscription
+      credits roll over for up to 3 months.
+    plans:
+      - {plan: Starter, credits: 20000, note: "published as 'up to 20,000 lookups fits in Starter'"}
+      - {plan: Growth, credits: 85000}
+      - {plan: Professional, credits: 250000}
+      - {plan: Enterprise, credits: 1000000}
+guidance:
+  - Monitor X-RateLimit-* headers to implement client-side rate limiting and avoid 429s.
+  - Implement exponential backoff for rate limits.
+  - Cache validation results to reduce API calls; identical lookups are served from a 7-day cache.
+  - Use bulk jobs for multi-record validation instead of looping single lookups.
+x-evidence:
+  - url: https://app.1lookup.io/api
+    http_status: 200
+    fetched: '2026-08-09'

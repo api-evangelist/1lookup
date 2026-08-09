@@ -1,11 +1,19 @@
 name: 1Lookup
 description: >-
-  Data intelligence platform offering 34 products through one REST API covering phone/email/IP validation, fraud
-  detection, B2B contact & company data, SEO/web intelligence, and more. Also provides a hosted MCP server and llms.txt
-  for AI/agent consumption.
+  1Lookup is a self-serve data verification and enrichment platform for SMBs, exposing more than forty
+  products through a single REST API and one universal credit balance. It validates phone numbers (line
+  type, carrier, HLR reachability, number portability, DNC status, spam/scam reputation, fraud score),
+  email addresses (syntax, MX, deliverability, disposable and role-based detection) and IP addresses
+  (geolocation, VPN/proxy/Tor and datacenter detection), then extends into B2B company and contact data
+  (firmographics, prospect and account search, contact append, skip trace), SEO and web intelligence
+  (domain authority, backlinks, keyword metrics, audience reports, SERP and website scraping), social and
+  media lookups, property data and audio transcription. The same engine powers a web dashboard with batch
+  CSV validation, roughly twenty-five free rate-limited browser tools, and a first-party hosted MCP
+  connector authorized with OAuth 2.1 that gives AI agents five of the core tools without an API key.
+image: https://www.1lookup.io/images/featured/pages/homepage.png
 url: https://1lookup.apievangelist.com/apis.yml
 created: '2026-08-08'
-modified: '2026-08-08'
+modified: '2026-08-09'
 specificationVersion: '0.21'
 tags:
   - phone validation
@@ -21,8 +29,10 @@ tags:
 apis:
   - name: 1Lookup REST API
     description: >-
-      RESTful API over HTTPS covering all 1Lookup products (phone/email/IP validation, fraud, enrichment, B2B data, SEO
-      intelligence). API-key Bearer auth, JSON bodies, job-based bulk processing.
+      RESTful API over HTTPS covering all 1Lookup products (phone/email/IP validation, fraud, enrichment,
+      B2B data, SEO intelligence). API-key Bearer auth, JSON bodies, job-based bulk processing. Roughly
+      47 documented operations, almost all POST, priced against a universal credit balance. No OpenAPI or
+      other machine-readable contract is published.
     humanURL: https://app.1lookup.io/api
     baseURL: https://app.1lookup.io/api/v1
     tags:
@@ -34,58 +44,151 @@ apis:
       - B2B contact & company data
       - SEO / web analytics
       - audio transcription
-      - MCP / agent-native
       - REST API
     properties:
       - type: Documentation
         url: https://app.1lookup.io/api
+      - type: APIReference
+        url: https://app.1lookup.io/api#endpoints
+      - type: GettingStarted
+        url: https://app.1lookup.io/api#getting-started
+      - type: Authentication
+        url: authentication/1lookup-authentication.yml
+      - type: Conventions
+        url: conventions/1lookup-conventions.yml
+      - type: ErrorCatalog
+        url: errors/1lookup-problem-types.yml
+      - type: RateLimits
+        url: rate-limits/1lookup-rate-limits.yml
+      - type: Lifecycle
+        url: lifecycle/1lookup-lifecycle.yml
   - name: 1Lookup MCP Server
     description: >-
-      Hosted/remote MCP connector with OAuth 2.1 auth exposing 5 tools (validate_phone, verify_email, ip_lookup,
-      bulk_verify, get_account) for Claude, Cursor, ChatGPT, and any MCP client.
+      First-party hosted/remote MCP connector with OAuth 2.1 auth (authorization code + PKCE, dynamic
+      client registration, single `lookup` scope) exposing 5 tools (validate_phone, verify_email,
+      ip_lookup, bulk_verify, get_account) for Claude, Cursor, ChatGPT, and any MCP client. Tool calls
+      bill against the same plan credits as the REST API.
     humanURL: https://www.1lookup.io/products/mcp
     baseURL: https://app.1lookup.io/api/mcp
     tags:
+      - MCP / agent-native
       - phone validation
       - email validation
       - IP intelligence
-      - fraud & risk
-      - data enrichment
-      - B2B contact & company data
-      - SEO / web analytics
-      - audio transcription
-      - MCP / agent-native
-      - REST API
     properties:
       - type: MCPServer
         url: https://app.1lookup.io/api/mcp
+      - type: MCPServer
+        url: mcp/1lookup-mcp.yml
+      - type: ToolCrosswalk
+        url: mcp/1lookup-tool-crosswalk.yml
       - type: Documentation
-        url: https://app.1lookup.io/api
+        url: https://www.1lookup.io/products/mcp
+      - type: OAuthScopes
+        url: scopes/1lookup-scopes.yml
   - name: 1Lookup LLMs Index
-    description: Machine-readable content indexes (llms.txt and llms-full.txt) for AI/answer engines.
+    description: >-
+      Machine-readable content indexes (llms.txt and llms-full.txt) for AI and answer engines, indexing
+      the free tools, every product page, the comparison pages and the key site sections.
     humanURL: https://www.1lookup.io
     baseURL: https://www.1lookup.io
     tags:
-      - phone validation
-      - email validation
-      - IP intelligence
-      - fraud & risk
-      - data enrichment
-      - B2B contact & company data
-      - SEO / web analytics
-      - audio transcription
       - MCP / agent-native
-      - REST API
     properties:
       - type: LLMsTxt
         url: https://www.1lookup.io/llms.txt
       - type: LLMsTxt
         url: https://www.1lookup.io/llms-full.txt
+      - type: LLMsTxt
+        url: llms/1lookup-llms.txt
 maintainers:
   - FN: 1Lookup
     url: https://www.1lookup.io
+    email: support@1lookup.io
 generated:
   by: apis.io/add
   model: claude-opus-4-8
   confidence: 93
   at: '2026-08-08T11:53:32.811Z'
+common:
+- type: DeveloperPortal
+  url: https://app.1lookup.io/api
+- type: Documentation
+  url: https://app.1lookup.io/api
+- type: APIReference
+  url: https://app.1lookup.io/api#endpoints
+- type: GettingStarted
+  url: https://app.1lookup.io/api#getting-started
+- type: Website
+  url: https://www.1lookup.io
+- type: Blog
+  url: https://www.1lookup.io/blog
+- type: Support
+  url: https://www.1lookup.io/contact
+- type: Pricing
+  url: https://www.1lookup.io/pricing
+- type: SignUp
+  url: https://app.1lookup.io/signup
+- type: Login
+  url: https://app.1lookup.io/login
+- type: TermsOfService
+  url: https://www.1lookup.io/terms
+- type: PrivacyPolicy
+  url: https://www.1lookup.io/privacy
+- type: FAQ
+  url: https://www.1lookup.io/faq
+- type: Integrations
+  url: https://www.1lookup.io/integrations
+- type: Glossary
+  url: https://www.1lookup.io/glossary
+- type: LinkedIn
+  url: https://linkedin.com/company/1lookup
+- type: Twitter
+  url: https://x.com/1LookupApp
+- type: YouTube
+  url: https://www.youtube.com/@1LookupApp
+- type: Authentication
+  url: authentication/1lookup-authentication.yml
+- type: OAuthScopes
+  url: scopes/1lookup-scopes.yml
+- type: Conventions
+  url: conventions/1lookup-conventions.yml
+- type: ErrorCatalog
+  url: errors/1lookup-problem-types.yml
+- type: RateLimits
+  url: rate-limits/1lookup-rate-limits.yml
+- type: Plans
+  url: plans/1lookup-plans-pricing.yml
+- type: Lifecycle
+  url: lifecycle/1lookup-lifecycle.yml
+- type: Conformance
+  url: conformance/1lookup-conformance.yml
+- type: Compliance
+  url: https://www.1lookup.io/security
+- type: TrustCenter
+  url: security/1lookup-trust-center.yml
+- type: Security
+  url: https://www.1lookup.io/security
+- type: VulnerabilityDisclosure
+  url: security/1lookup-vulnerability-disclosure.yml
+- type: DomainSecurity
+  url: security/1lookup-domain-security.yml
+- type: WellKnown
+  url: well-known/1lookup-well-known.yml
+- type: Packages
+  url: packages/1lookup-packages.yml
+- type: Sandbox
+  url: sandbox/1lookup-sandbox.yml
+- type: MCPServer
+  url: mcp/1lookup-mcp.yml
+- type: ToolCrosswalk
+  url: mcp/1lookup-tool-crosswalk.yml
+- type: LLMsTxt
+  url: llms/1lookup-llms.txt
+- type: AgentSkill
+  url: skills/_index.yml
+x-enrichment:
+  date: '2026-08-09'
+  status: enriched
+  artifacts_added: 23
+  pass: local-v1

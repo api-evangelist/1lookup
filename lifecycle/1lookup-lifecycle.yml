@@ -1,0 +1,67 @@
+generated: '2026-08-09'
+method: searched
+source: https://app.1lookup.io/api
+description: >-
+  1Lookup's published lifecycle posture is thin. The API is versioned only by the /v1 path segment; no
+  versioning policy, deprecation policy, Sunset/Deprecation header support, changelog, roadmap or public
+  status page was found. SLA commitments are mentioned only as part of a custom enterprise contract.
+  Every absence below was probed, not assumed.
+versioning:
+  scheme: uri-path
+  current: v1
+  base: https://app.1lookup.io/api/v1
+  policy_url: null
+  policy_published: false
+deprecation:
+  policy_url: null
+  policy_published: false
+  sunset_header: unknown
+  deprecation_header: unknown
+  note: RFC 8594 Sunset / Deprecation header support is not documented.
+change_log:
+  url: null
+  published: false
+  probed:
+    - {url: 'https://www.1lookup.io/changelog', status: 404}
+roadmap:
+  url: null
+  published: false
+  probed:
+    - {url: 'https://www.1lookup.io/roadmap', status: 404}
+status_page:
+  url: null
+  published: false
+  probed:
+    - {url: 'https://status.1lookup.io', status: 0, note: no DNS resolution}
+    - {url: 'https://www.1lookup.io/status', status: 404}
+sla:
+  url: null
+  uptime_target: null
+  note: >-
+    "SLA commitments" are listed as a feature of the custom enterprise plan (starting at $2,000/month)
+    on the pricing page; no public SLA document is published.
+  source: https://www.1lookup.io/pricing
+data_lifecycle:
+  result_cache: 7 days
+  data_refresh: Phone and carrier data refreshed every 24 hours from primary sources.
+  retention: Automatic data deletion after 30 days.
+  source: https://www.1lookup.io/security
+deprecated_operations: []
+gaps:
+  - No public status page or uptime history.
+  - No changelog or release notes, so API consumers have no way to detect additive or breaking changes.
+  - No deprecation policy or Sunset header contract.
+  - No published roadmap.
+x-evidence:
+  - url: https://app.1lookup.io/api
+    http_status: 200
+    fetched: '2026-08-09'
+  - url: https://www.1lookup.io/changelog
+    http_status: 404
+    fetched: '2026-08-09'
+  - url: https://www.1lookup.io/status
+    http_status: 404
+    fetched: '2026-08-09'
+  - url: https://status.1lookup.io
+    http_status: 0
+    fetched: '2026-08-09'

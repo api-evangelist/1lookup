@@ -1,0 +1,41 @@
+generated: '2026-08-09'
+method: probed
+source: https://app.1lookup.io/.well-known/oauth-authorization-server
+docs: https://www.1lookup.io/products/mcp
+description: >-
+  1Lookup's only OAuth surface is the hosted MCP connector. Its authorization-server metadata (RFC 8414)
+  and protected-resource metadata (RFC 9728) both advertise a single scope. The REST API at
+  /api/v1 uses static API keys and has no scope model at all — do not read this file as covering it.
+schemes:
+  - name: mcpOAuth21
+    source: well-known/1lookup-oauth-authorization-server.json
+    issuer: https://app.1lookup.io
+    resource: https://app.1lookup.io/api/mcp
+    flows:
+      - flow: authorizationCode
+        authorizationUrl: https://app.1lookup.io/api/mcp/oauth/authorize
+        tokenUrl: https://app.1lookup.io/api/mcp/oauth/token
+        pkce: [S256]
+scopes:
+  - scope: lookup
+    description: >-
+      Grants an MCP client the five 1Lookup tools (validate_phone, verify_email, ip_lookup, bulk_verify,
+      get_account). Provider describes the grant as read-only; calls bill against the authorizing
+      account's plan credits.
+    flows: [authorizationCode]
+    sources:
+      - well-known/1lookup-oauth-authorization-server.json
+      - well-known/1lookup-oauth-protected-resource.json
+gaps:
+  - >-
+    A single coarse `lookup` scope covers all five tools; there is no separation between the
+    credit-spending validation tools and the read-only get_account tool, so an agent cannot be granted
+    balance visibility without also being granted the ability to spend credits.
+  - No published scopes/permissions reference page beyond the MCP product page.
+x-evidence:
+  - url: https://app.1lookup.io/.well-known/oauth-authorization-server
+    http_status: 200
+    fetched: '2026-08-09'
+  - url: https://app.1lookup.io/.well-known/oauth-protected-resource
+    http_status: 200
+    fetched: '2026-08-09'

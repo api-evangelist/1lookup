@@ -1,0 +1,106 @@
+generated: '2026-08-09'
+method: searched
+source: https://app.1lookup.io/api
+docs: https://app.1lookup.io/api
+description: >-
+  Cross-cutting request/response semantics for the 1Lookup REST API, transcribed from the published API
+  reference. Absences below are recorded as absences, not guessed: 1Lookup documents no idempotency key,
+  no pagination envelope for single lookups, no request-id header, and no API versioning policy beyond
+  the /v1 path segment.
+base_url: https://app.1lookup.io/api/v1
+transport:
+  protocol: HTTPS
+  request_format: application/json
+  response_format: application/json
+  predominant_method: POST
+  note: Nearly every product is a POST with a JSON body; only account status and bulk-job reads are GET.
+authentication:
+  style: bearer-api-key
+  header: 'Authorization: Bearer YOUR_API_KEY'
+  see: authentication/1lookup-authentication.yml
+idempotency:
+  supported: false
+  documented: false
+  note: >-
+    No Idempotency-Key header, no idempotent-retry contract, and no request-replay window are documented.
+    Lookups are read-shaped so a repeat is usually harmless, but the 7-day result cache — not an
+    idempotency contract — is what makes a repeat cheap. Agents cannot safely assume exactly-once
+    semantics on credit-consuming calls.
+caching:
+  result_cache: 7 days
+  scope: identical lookup inputs
+  bypass:
+    parameter: bypass_cache
+    type: boolean
+    in: request body
+    applies_to: single-lookup POST endpoints
+    description: Skip the 7-day cache and force a fresh lookup.
+  refresh: Phone and carrier data refreshed every 24 hours from primary sources.
+pagination:
+  single_lookups: none
+  bulk_jobs:
+    style: paged
+    endpoint: 'GET /api/v1/bulk/jobs/{job_id}/results'
+    description: Fetch paginated persisted lookup rows for a bulk job.
+    note: Page parameter names are not published in the reference.
+  search_endpoints:
+    account_search: Up to 100 companies per search
+    prospect_search: Preview rows with masked surnames and email-availability flags; reveal one row with B2B Contact Append
+    social_search: One page of matching results per search
+async:
+  pattern: job-and-poll
+  create: 'POST /api/v1/bulk/jobs'
+  status: 'GET /api/v1/bulk/jobs/{job_id}'
+  results: 'GET /api/v1/bulk/jobs/{job_id}/results'
+  supported_products: [HLR, MNP, Number Type, Email Validation, Reverse Email Append]
+  completion_artifact: Signed CSV download URL, expires after 1 hour
+  budget_note: Status and result polling do not consume lookup-rate budget.
+  callbacks: none documented (no webhooks)
+rate_limiting:
+  limit: 1000 requests/minute
+  scope: organization
+  window: resets every minute
+  headers:
+    - X-RateLimit-Limit
+    - X-RateLimit-Remaining
+    - X-RateLimit-Reset
+  on_exceed: HTTP 429
+  guidance: Docs recommend exponential backoff on 429.
+  see: rate-limits/1lookup-rate-limits.yml
+error_envelope:
+  shape: |
+    {
+      "success": false,
+      "error": { "message": "...", "code": "...", "type": "..." }
+    }
+  fields:
+    success: boolean, false on error
+    error.message: human-readable message
+    error.code: machine code, e.g. INVALID_INPUT
+    error.type: error class, e.g. api_error
+  rfc9457: false
+  see: errors/1lookup-problem-types.yml
+metering:
+  unit: universal credits
+  billing: One balance across every product; core validations 1 credit, enrichment 2-86 credits.
+  success_based: >-
+    A number of products are only charged on a match (business-verify, business-lookup,
+    company-profile-lookup, social-*, video-transcript, ad-library-lookup, audience-demographics,
+    link-in-bio-lookup, property-lookup, mobile-finder, email-enrichment, company-firmographics,
+    b2b-contact-append).
+  balance_check: 'GET /api/v1/account'
+  insufficient_credits: HTTP 402
+versioning:
+  scheme: uri-path
+  current: v1
+  policy_published: false
+  see: lifecycle/1lookup-lifecycle.yml
+tracing:
+  request_id_header: none documented
+x-evidence:
+  - url: https://app.1lookup.io/api
+    http_status: 200
+    fetched: '2026-08-09'
+  - url: https://www.1lookup.io/pricing
+    http_status: 200
+    fetched: '2026-08-09'

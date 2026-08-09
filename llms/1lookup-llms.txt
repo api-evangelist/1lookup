@@ -1,0 +1,110 @@
+# 1Lookup
+
+> 1Lookup is a data verification and enrichment platform that validates phone numbers, email addresses, IP addresses, and domains, and enriches companies, contacts, and keywords. A single lookup returns structured signals: line type, carrier, HLR reachability, number portability, spam/scam reputation, email deliverability, IP geolocation and VPN/proxy detection, domain authority and backlink profiles, keyword volume/CPC/difficulty, website audience reports, company firmographics, B2B contact data, social profile/post/search/ad-library lookups, video transcripts, and audio transcription. The same engine powers a REST API, a web dashboard with batch CSV validation, and a suite of free, rate-limited browser tools.
+
+This file is a structured index of 1Lookup's public pages for AI and answer engines. A fuller version is at https://www.1lookup.io/llms-full.txt. All descriptions below are factual capability statements; performance and pricing figures are intentionally omitted here, see the live pages for current numbers.
+
+## Free tools (no signup, rate-limited)
+
+- [Phone Number Lookup](https://www.1lookup.io/tools/phone-number-lookup): Validate any number and see line type, carrier and country.
+- [Reverse Phone Lookup](https://www.1lookup.io/tools/reverse-phone-lookup): Find the likely owner and location behind a phone number.
+- [Carrier Lookup](https://www.1lookup.io/tools/carrier-lookup): Identify the carrier and network for any phone number.
+- [Phone Line Type Lookup](https://www.1lookup.io/tools/phone-line-type-lookup): Check if a number is mobile, landline or VoIP.
+- [Spam Number Lookup](https://www.1lookup.io/tools/spam-phone-checker): Look up any number's spam, scam and robocall reputation.
+- [HLR Lookup](https://www.1lookup.io/tools/hlr-lookup): Live HLR query, is a mobile number active and reachable?
+- [Mobile Number Portability (MNP) Lookup](https://www.1lookup.io/tools/phone-portability-lookup): Check whether a mobile number has been ported.
+- [Email Verifier](https://www.1lookup.io/tools/email-verifier): Check if an email is valid, deliverable and safe to send.
+- [IP Address Lookup](https://www.1lookup.io/tools/ip-address-lookup): Geolocate any IP, city, ISP, ASN and connection type.
+- [What Is My IP](https://www.1lookup.io/tools/what-is-my-ip): Instantly see your public IP, location and ISP.
+- [VPN & Proxy Detection](https://www.1lookup.io/tools/vpn-proxy-detection): Detect VPN, proxy, Tor and datacenter IPs.
+- [IP Blacklist & Reputation Check](https://www.1lookup.io/tools/ip-blacklist-check): Check an IP's reputation and blocklist status.
+- [Domain Authority Checker](https://www.1lookup.io/tools/domain-authority-checker): Check DA, DR, backlinks and estimated traffic.
+- [Social Media Username Checker](https://www.1lookup.io/tools/social-username-checker): See whether a username is already taken on ten networks.
+- [Instagram Profile Viewer](https://www.1lookup.io/tools/instagram-profile-viewer): Followers, following, posts and verified status for any public account.
+- [Video Transcript Generator](https://www.1lookup.io/tools/video-transcript-generator): Paste a TikTok, YouTube or Reels link and read what was said.
+- [Engagement Rate Calculator](https://www.1lookup.io/tools/engagement-rate-calculator): Fetch a creator's follower count and grade their engagement rate by account size.
+- [Facebook Ad Library Search](https://www.1lookup.io/tools/facebook-ad-library-search): See the ads any brand is running on Facebook and Instagram.
+- [TikTok Ad Library Search](https://www.1lookup.io/tools/tiktok-ad-library-search): Look up the TikTok ads a brand is currently running.
+- [All free tools](https://www.1lookup.io/tools): Index of every free 1Lookup tool.
+
+## Products
+
+- [Phone Validation](https://www.1lookup.io/products/phone-validation): Validate a phone number and return line type, carrier, country/region, DNC status, reachability and a fraud score.
+- [Carrier Lookup](https://www.1lookup.io/products/carrier-lookup): Identify the carrier/network behind a number.
+- [HLR Lookup](https://www.1lookup.io/products/hlr-lookup): Query the Home Location Register for live mobile reachability.
+- [Phone Spam Check](https://www.1lookup.io/products/phone-spam-check): Score a number's spam/scam reputation and report history.
+- [Reverse Lookup](https://www.1lookup.io/products/reverse-lookup): Resolve owner/location context for a phone number.
+- [Email Validation](https://www.1lookup.io/products/email-validation): Verify syntax, domain/MX, deliverability, disposable and role-based addresses.
+- [IP Lookup](https://www.1lookup.io/products/ip-lookup): Geolocate IPs and detect VPN/proxy/Tor and connection type.
+- [Fraud Detection](https://www.1lookup.io/products/fraud-detection): Combine phone/email/IP signals into a fraud risk score.
+- [Domain Intelligence](https://www.1lookup.io/products/domain-seo-intelligence): Assess domain age, reputation and signals.
+- [Domain Authority](https://www.1lookup.io/products/domain-authority): Score a domain's search footprint: authority score, organic/paid keyword counts, estimated traffic and traffic value.
+- [Backlink Overview](https://www.1lookup.io/products/backlink-overview): Map a domain's link profile: referring domains, total backlinks, follow/nofollow split and Authority Score.
+- [Keyword Metrics](https://www.1lookup.io/products/keyword-metrics): Search volume, CPC, difficulty, intent, trend and SERP features for any keyword.
+- [Audience Intelligence](https://www.1lookup.io/products/audience-intelligence): Website audience reports: traffic by country, age/income demographics, traffic sources and onward destinations.
+- [Prospect Search](https://www.1lookup.io/products/prospect-search): Find people by job title, seniority, location and employer, with per-row contact reveal.
+- [Account Search](https://www.1lookup.io/products/account-search): Find companies by headcount, revenue, location and technology, up to 100 per search.
+- [Company Firmographics](https://www.1lookup.io/products/company-firmographics): Turn a company domain into a full profile: industry, SIC/NAICS, headcount, revenue and tech stack.
+- [B2B Contact Append](https://www.1lookup.io/products/b2b-contact-append): Verified work email, title and seniority from a name plus company, an email, or a LinkedIn URL.
+- [Business Verify](https://www.1lookup.io/products/business-verify): One check answering whether a business is real, open and reachable: live business-listing data blended with phone and email validation into a 0-100 verification score. Only charged when the business is found.
+- [Business Lookup](https://www.1lookup.io/products/business-lookup): Business name and city in; address, phone, website, category, star rating, review count, hours and open/closed status out. Only charged on a match.
+- [Company Profile Lookup](https://www.1lookup.io/products/company-profile-lookup): Company domain in; profile from professional network data out: industry, size, headquarters, founding year, specialties and funding history. Only charged on a match.
+- [Social Profile Check](https://www.1lookup.io/products/social-profile-check): Handle in on Instagram, TikTok, YouTube, X/Twitter, Facebook, Threads, Twitch, Snapchat, Bluesky or Truth Social; followers, engagement, verified and business flags out, from public social profiles. Only charged on a match.
+- [Social Post Lookup](https://www.1lookup.io/products/social-post-lookup): Post or video URL in (Instagram, TikTok, YouTube, X/Twitter, Facebook, Threads, Bluesky, Truth Social, Pinterest, LinkedIn); caption, author, likes, comments, shares, views and posted date out. Only charged on a match.
+- [Video Transcript](https://www.1lookup.io/products/video-transcript): Video URL in (TikTok, Instagram, YouTube, X, Facebook, LinkedIn, Reddit); the full spoken transcript out as text. Only charged when a transcript is found.
+- [Social Search](https://www.1lookup.io/products/social-search): Platform plus keyword in (Instagram, TikTok, YouTube, Threads, Pinterest, Reddit); matching public profiles and content out, one page of results per search. Empty searches are free.
+- [Ad Library Lookup](https://www.1lookup.io/products/ad-library-lookup): Company name or keyword in; the ads it is running out, from the public ad libraries of Meta/Facebook, TikTok, LinkedIn and Google. Only charged when ads are found.
+- [TikTok Audience Demographics](https://www.1lookup.io/products/audience-demographics): TikTok handle in; follower countries out, each with its ISO code and percentage share of the audience. Country shares only; no gender or age data. Only charged on a match.
+- [Link-in-Bio Lookup](https://www.1lookup.io/products/link-in-bio-lookup): Linktree, Komi, Pillar, Lnk.bio or Linkme URL in; every link plus profile info out. Only charged on a match.
+- [Property Lookup](https://www.1lookup.io/products/property-lookup): US address in; beds, baths, square footage, year built, listing status and last sale out, from public real-estate listing data. Only charged on a match.
+- [Job Change Monitoring](https://www.1lookup.io/products/job-change-monitoring): Watch a contact list and receive an event when someone changes company or title, rechecked weekly.
+- [Audio Transcription](https://www.1lookup.io/products/bulk-audio-transcription): Transcribe audio/video URLs with word timestamps and speaker labels, billed per minute.
+- [SERP Scraper](https://www.1lookup.io/products/search-intent-lookup): Scrape Google search results, organic listings, knowledge panels and related searches.
+- [Website Scraper](https://www.1lookup.io/products/website-scraper): Turn any URL into clean, structured content for AI workflows.
+- [Website Contacts Scraper](https://www.1lookup.io/products/website-contacts-scraper): Extract emails, phones and social profiles from any domain.
+- [Email Append](https://www.1lookup.io/products/email-append): Append email addresses from name + postal address inputs.
+- [Reverse Email Append](https://www.1lookup.io/products/reverse-email-append): Identity enrichment from an email address.
+- [Reverse IP Append](https://www.1lookup.io/products/reverse-ip-append): Contact and geo intelligence from an IP address.
+- [Phone Scrub](https://www.1lookup.io/products/phone-scrub): DNC status, line type and risk flags for outreach lists.
+- [Skip Trace](https://www.1lookup.io/products/skip-trace): Enrich and trace contact records.
+- [MCP Connector](https://www.1lookup.io/products/mcp): Use 1Lookup's validation, SEO, company, contact and transcription tools from Claude, Cursor and other MCP clients.
+- [All products](https://www.1lookup.io/products): Index of every 1Lookup product.
+
+## Compare
+
+- [1Lookup vs Numverify](https://www.1lookup.io/compare/numverify)
+- [1Lookup vs Twilio Lookup](https://www.1lookup.io/compare/twilio-lookup)
+- [1Lookup vs IPQualityScore](https://www.1lookup.io/compare/ipqualityscore)
+- [1Lookup vs Melissa](https://www.1lookup.io/compare/melissa)
+- [1Lookup vs Telesign](https://www.1lookup.io/compare/telesign)
+- [1Lookup vs Semrush](https://www.1lookup.io/compare/semrush): SEO data per lookup vs platform subscription with API units.
+- [1Lookup vs Ahrefs](https://www.1lookup.io/compare/ahrefs): Backlink and keyword data per call vs platform plans.
+- [1Lookup vs Similarweb](https://www.1lookup.io/compare/similarweb): Pay-per-report audience data vs analytics packages.
+- [1Lookup vs ZoomInfo](https://www.1lookup.io/compare/zoominfo): Self-serve pay-as-you-go B2B data vs annual seat contracts.
+- [1Lookup vs Apollo.io](https://www.1lookup.io/compare/apollo-io): Pay-per-search prospecting vs per-seat plans.
+- [1Lookup vs Lusha](https://www.1lookup.io/compare/lusha): Per-lookup contact data vs per-seat plans.
+- [1Lookup vs Clearbit](https://www.1lookup.io/compare/clearbit): Standalone enrichment after Clearbit's HubSpot sunset.
+- [1Lookup vs Social Blade](https://www.1lookup.io/compare/social-blade)
+- [1Lookup vs HypeAuditor](https://www.1lookup.io/compare/hypeauditor)
+- [1Lookup vs Modash](https://www.1lookup.io/compare/modash)
+- [1Lookup vs Apify](https://www.1lookup.io/compare/apify)
+- [1Lookup vs Bright Data](https://www.1lookup.io/compare/bright-data)
+- [1Lookup vs Phyllo](https://www.1lookup.io/compare/phyllo)
+- [All comparisons](https://www.1lookup.io/compare): Index of every competitor comparison.
+
+## Key pages
+
+- [Pricing](https://www.1lookup.io/pricing): Current plans, credit pricing, and per-product credit costs.
+- [Industries](https://www.1lookup.io/industries): How 1Lookup is used per industry.
+- [Use cases](https://www.1lookup.io/use-cases): Fraud prevention, lead-list cleaning, SMS deliverability, onboarding verification.
+- [Alternatives guides](https://www.1lookup.io/alternatives): Honest, verified-pricing shortlists of alternatives to major validation vendors.
+- [Integrations](https://www.1lookup.io/integrations): Connect 1Lookup to CRMs, automation platforms, and data tools.
+- [Glossary](https://www.1lookup.io/glossary): Definitions of phone, email, IP, SEO, and B2B data terms.
+- [Blog](https://www.1lookup.io/blog): Guides on phone/email/IP validation, deliverability, SEO data, and B2B enrichment.
+- [About](https://www.1lookup.io/about)
+- [Contact](https://www.1lookup.io/contact)
+
+## Optional
+
+- [App / dashboard](https://app.1lookup.io): Sign in, single and batch lookups, API keys.
+- [API documentation](https://app.1lookup.io/api): REST API reference.

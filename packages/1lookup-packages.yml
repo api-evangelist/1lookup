@@ -1,0 +1,69 @@
+generated: '2026-08-09'
+method: searched
+source: npm registry search, PyPI, GitHub search, https://app.1lookup.io/api, https://www.1lookup.io/integrations
+description: >-
+  1Lookup ships NO first-party client SDK in any language. The API reference offers copy-paste snippets
+  (axios for Node.js, requests for Python, curl/bash) rather than libraries, and the MCP product page
+  states the connector needs no SDK at all. The only published package touching 1Lookup is a third-party
+  n8n community node. Registries searched: npm, PyPI, Maven Central, NuGet, pkg.go.dev, RubyGems,
+  Packagist, crates.io.
+official_sdks: false
+packages:
+  - language: javascript
+    registry: npm
+    name: '@momentum-labs/n8n-nodes-1lookup'
+    version: 1.0.1
+    license: MIT
+    url: https://www.npmjs.com/package/@momentum-labs/n8n-nodes-1lookup
+    install: npm install @momentum-labs/n8n-nodes-1lookup
+    repository: https://github.com/GroupX-ai/1Lookup-N8N
+    homepage: https://1lookup.io
+    description: n8n community node for 1Lookup email, phone, IP, and domain intelligence APIs.
+    official: false
+    note: >-
+      Ambiguous provenance — published under the @momentum-labs npm scope and hosted in the GroupX-ai
+      GitHub org, but the package author metadata reads "1Lookup <support@1lookup.io>" and the homepage
+      is 1lookup.io. Not claimed as first-party on any 1Lookup page, so recorded official: false.
+registries_checked:
+  - {registry: npm, query: '1lookup', first_party_hits: 0}
+  - {registry: pypi, query: '1lookup / onelookup / lookup1', status: 404, first_party_hits: 0}
+  - {registry: maven-central, first_party_hits: 0}
+  - {registry: nuget, first_party_hits: 0}
+  - {registry: pkg.go.dev, first_party_hits: 0}
+  - {registry: rubygems, first_party_hits: 0}
+  - {registry: packagist, first_party_hits: 0}
+  - {registry: crates.io, first_party_hits: 0}
+code_examples_published:
+  - {language: javascript, style: axios snippet, url: 'https://app.1lookup.io/api'}
+  - {language: python, style: requests class snippet, url: 'https://app.1lookup.io/api'}
+  - {language: bash, style: curl script, url: 'https://app.1lookup.io/api'}
+integration_platforms:
+  note: >-
+    1Lookup markets a large integration library (100+ listings at https://www.1lookup.io/integrations)
+    covering CRMs, automation and analytics platforms, and the API reference names Zapier, Make and n8n
+    specifically. These are platform guides, not distributed client libraries.
+  examples:
+    - https://www.1lookup.io/integrations/zapier
+    - https://www.1lookup.io/integrations/make
+    - https://www.1lookup.io/integrations/n8n
+third_party_collections:
+  - name: 1Lookup API (Postman public workspace)
+    url: https://www.postman.com/awais-c45980a1-2767235/1lookup-api
+    official: false
+    note: >-
+      Public Postman workspace published 2026-07-27 by "Awais Ahmad's Team", not by 1Lookup, and not
+      linked from any 1Lookup page. Not treated as a provider-published Postman surface.
+gaps:
+  - No first-party SDK in any language.
+  - No first-party CLI.
+  - No first-party Postman collection or workspace.
+x-evidence:
+  - url: https://registry.npmjs.org/-/v1/search?text=1lookup
+    http_status: 200
+    fetched: '2026-08-09'
+  - url: https://pypi.org/pypi/1lookup/json
+    http_status: 404
+    fetched: '2026-08-09'
+  - url: https://app.1lookup.io/api
+    http_status: 200
+    fetched: '2026-08-09'

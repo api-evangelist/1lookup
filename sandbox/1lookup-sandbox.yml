@@ -1,0 +1,55 @@
+generated: '2026-08-09'
+method: searched
+source: https://app.1lookup.io/api, https://www.1lookup.io/tools, https://www.1lookup.io/pricing
+description: >-
+  1Lookup has NO API sandbox in the conventional sense — no test mode, no test/live key prefixes, no
+  separate sandbox host, no magic test phone numbers or emails, and no documented fixture or trigger
+  tooling. What it does publish is a no-signup browser console (free, rate-limited tools that run the
+  real lookups) plus a dashboard console for single and batch lookups, and a 7-day credited trial. This
+  file records both the surfaces that exist and, explicitly, the test affordances that do not.
+api_test_mode:
+  present: false
+  test_keys: false
+  key_prefixes: none published
+  sandbox_host: none
+  magic_test_values: none published
+  test_clock: false
+  fixtures_or_triggers: false
+  note: >-
+    Every API call runs against production data and spends real credits. There is no way to exercise an
+    integration without consuming plan credits, other than the 7-day trial allowance.
+console:
+  dashboard:
+    url: https://app.1lookup.io
+    signup_required: true
+    capabilities: [single lookups, batch CSV validation, analytics, API key management]
+  free_browser_tools:
+    url: https://www.1lookup.io/tools
+    signup_required: false
+    rate_limited: true
+    note: >-
+      Roughly 25 free tools run the same validation engine as the API (phone lookup, reverse phone,
+      carrier, line type, spam check, HLR, portability, email verifier, IP lookup, VPN/proxy detection,
+      IP blacklist, domain authority, social checks, ad-library search). Useful for verifying expected
+      response semantics before writing code, but they are not API calls and return no JSON.
+trial:
+  length: 7 days
+  card_required: true
+  credited: {starter: '$5 in universal credits', growth_and_above: '$20 in universal credits'}
+  note: Programmatic access is a paid feature; the trial is the only pre-payment path to the API.
+cost_control_for_testing:
+  - 'GET /api/v1/account returns credit balance and plan status — call it before a large run.'
+  - Identical lookups are cached for 7 days, so re-running the same test input does not re-bill.
+  - '`bypass_cache: true` in a single-lookup body forces a fresh (billable) lookup.'
+  - Many enrichment products are only charged on a match, so no-match test inputs are free.
+gaps:
+  - No test-mode credentials or sandbox environment.
+  - No published magic/reserved test identifiers to exercise error and edge-case branches.
+  - No way to simulate a 402 (insufficient credits) or 429 (rate limited) response deterministically.
+x-evidence:
+  - url: https://www.1lookup.io/pricing
+    http_status: 200
+    fetched: '2026-08-09'
+  - url: https://app.1lookup.io/api
+    http_status: 200
+    fetched: '2026-08-09'

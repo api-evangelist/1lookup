@@ -1,0 +1,93 @@
+generated: '2026-08-09'
+method: probed
+source: live GET of /.well-known/* on every 1Lookup host
+description: >-
+  Well-known discovery surface for 1Lookup. Only app.1lookup.io serves real documents, and only the two
+  OAuth metadata documents that back the hosted MCP connector. NOTE: app.1lookup.io is a Next.js app with
+  a catch-all route that answers HTTP 200 with an HTML shell for ANY unknown /.well-known/* path, so a
+  200 alone is not evidence there — every entry below records the observed content-type, and only
+  application/json bodies that parsed are treated as hits.
+hosts:
+  - host: https://app.1lookup.io
+    documents:
+      - path: /.well-known/oauth-authorization-server   # RFC 8414
+        status: 200
+        content_type: application/json
+        parsed: true
+        file: 1lookup-oauth-authorization-server.json
+      - path: /.well-known/oauth-protected-resource     # RFC 9728
+        status: 200
+        content_type: application/json
+        parsed: true
+        file: 1lookup-oauth-protected-resource.json
+      - path: /.well-known/security.txt
+        status: 200
+        content_type: text/html
+        parsed: false
+        note: SPA catch-all HTML shell, not an RFC 9116 document — no security.txt published
+      - path: /.well-known/openid-configuration
+        status: 200
+        content_type: text/html
+        parsed: false
+        note: SPA catch-all HTML shell — no OIDC discovery document
+      - path: /.well-known/api-catalog
+        status: 200
+        content_type: text/html
+        parsed: false
+        note: SPA catch-all HTML shell — no RFC 9727 API catalog
+      - path: /.well-known/ai-plugin.json
+        status: 200
+        content_type: text/html
+        parsed: false
+      - path: /.well-known/agent-card.json
+        status: 200
+        content_type: text/html
+        parsed: false
+        note: SPA catch-all HTML shell — NOT an A2A agent card
+      - path: /.well-known/agent.json
+        status: 200
+        content_type: text/html
+        parsed: false
+      - path: /.well-known/mcp.json
+        status: 200
+        content_type: text/html
+        parsed: false
+  - host: https://www.1lookup.io
+    documents:
+      - path: /.well-known/security.txt
+        status: 404
+      - path: /.well-known/openid-configuration
+        status: 404
+      - path: /.well-known/oauth-authorization-server
+        status: 404
+      - path: /.well-known/oauth-protected-resource
+        status: 404
+      - path: /.well-known/api-catalog
+        status: 404
+      - path: /.well-known/ai-plugin.json
+        status: 404
+      - path: /.well-known/agent-card.json
+        status: 404
+      - path: /.well-known/agent.json
+        status: 404
+  - host: https://1lookup.io
+    documents:
+      - path: /.well-known/security.txt
+        status: 404
+      - path: /.well-known/oauth-authorization-server
+        status: 404
+      - path: /.well-known/agent-card.json
+        status: 404
+      - path: /.well-known/agent.json
+        status: 404
+summary:
+  security_txt: false
+  openid_configuration: false
+  oauth_authorization_server: true
+  oauth_protected_resource: true
+  api_catalog: false
+  agent_card: false
+x-evidence:
+  fetched: '2026-08-09'
+  probes: 26
+  hits: 2

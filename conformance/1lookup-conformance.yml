@@ -1,0 +1,103 @@
+generated: '2026-08-09'
+method: searched
+source: >-
+  https://app.1lookup.io/api, https://www.1lookup.io/security,
+  https://app.1lookup.io/.well-known/oauth-authorization-server
+description: >-
+  Cross-cutting standards conformance for 1Lookup, asserted only where a document was fetched or a
+  published claim was read. The strongest conformance is on the agent side (MCP + OAuth 2.1 discovery
+  metadata + llms.txt); the REST API side conforms to no published API standard.
+standards:
+  - id: openapi
+    conforms: false
+    evidence: >-
+      No OpenAPI/Swagger document found. /openapi.json, /openapi.yaml, /swagger.json on app.1lookup.io
+      return the Next.js HTML shell with a 200 (soft-404); /api/openapi.json, /api/v1/openapi.json and
+      /api-docs return 404.
+  - id: asyncapi
+    conforms: false
+    evidence: No event/streaming surface published; bulk work is job-and-poll, not evented.
+  - id: graphql
+    conforms: false
+    evidence: No /graphql endpoint documented or discovered.
+  - id: mcp
+    conforms: true
+    evidence: >-
+      First-party hosted MCP server at https://app.1lookup.io/api/mcp; challenges with RFC 6750
+      WWW-Authenticate carrying resource_metadata, per the MCP authorization spec.
+    source: https://www.1lookup.io/products/mcp
+  - id: oauth2
+    conforms: true
+    evidence: 'OAuth 2.1 authorization code flow on the MCP connector; grant_types_supported [authorization_code, refresh_token].'
+    source: well-known/1lookup-oauth-authorization-server.json
+  - id: rfc7636-pkce
+    conforms: true
+    evidence: 'code_challenge_methods_supported: [S256]'
+    source: well-known/1lookup-oauth-authorization-server.json
+  - id: rfc8414-authorization-server-metadata
+    conforms: true
+    evidence: '/.well-known/oauth-authorization-server returns application/json with issuer + endpoints'
+    source: https://app.1lookup.io/.well-known/oauth-authorization-server
+  - id: rfc9728-protected-resource-metadata
+    conforms: true
+    evidence: '/.well-known/oauth-protected-resource returns resource + authorization_servers + scopes_supported'
+    source: https://app.1lookup.io/.well-known/oauth-protected-resource
+  - id: rfc7591-dynamic-client-registration
+    conforms: true
+    evidence: 'registration_endpoint: https://app.1lookup.io/api/mcp/oauth/register'
+    source: well-known/1lookup-oauth-authorization-server.json
+  - id: rfc6750-bearer-token
+    conforms: true
+    evidence: 'bearer_methods_supported: [header]; REST API also uses Authorization: Bearer for API keys'
+  - id: openid-connect
+    conforms: false
+    evidence: No /.well-known/openid-configuration document (SPA HTML shell only).
+  - id: rfc9457-problem-details
+    conforms: false
+    evidence: 'Errors use a vendor envelope {success,error{message,code,type}}, not application/problem+json.'
+    source: errors/1lookup-problem-types.yml
+  - id: rfc9116-security-txt
+    conforms: false
+    evidence: No /.well-known/security.txt on any host (see well-known/1lookup-well-known.yml).
+  - id: rfc9727-api-catalog
+    conforms: false
+    evidence: No /.well-known/api-catalog document.
+  - id: rfc8594-sunset-header
+    conforms: false
+    evidence: No deprecation policy or Sunset header contract documented.
+  - id: llms-txt
+    conforms: true
+    evidence: 'https://www.1lookup.io/llms.txt (13KB structured index) and llms-full.txt both published.'
+    source: llms/1lookup-llms.txt
+  - id: a2a
+    conforms: false
+    evidence: 'No agent card at /.well-known/agent-card.json or /.well-known/agent.json on any host.'
+  - id: idempotency
+    conforms: false
+    evidence: No idempotency key or replay contract documented.
+  - id: rate-limit-headers
+    conforms: true
+    evidence: 'X-RateLimit-Limit / -Remaining / -Reset returned on every response (de-facto convention, not RFC 9861 RateLimit fields).'
+compliance:
+  published: true
+  page: https://www.1lookup.io/security
+  posture: >-
+    1Lookup publishes a security and compliance page that is explicit about what is self-assessed versus
+    third-party attested. Notably, NO independent audit certification (SOC 2, ISO 27001) is claimed.
+  programs:
+    - {name: GDPR, status: self-assessed, note: Data subject rights supported; Standard Contractual Clauses for transfers.}
+    - {name: CCPA/CPRA, status: self-assessed, note: Includes opt-out of sharing for advertising.}
+    - {name: PCI DSS, status: inherited, note: Card payments handled by Stripe (PCI DSS Level 1); 1Lookup does not store full card numbers.}
+    - {name: Internal Security Policies, status: internal, note: Documented access control, encryption and incident response, reviewed at least annually.}
+  certifications: []
+x-evidence:
+  - url: https://www.1lookup.io/security
+    http_status: 200
+    fetched: '2026-08-09'
+  - url: https://app.1lookup.io/.well-known/oauth-authorization-server
+    http_status: 200
+    fetched: '2026-08-09'
+  - url: https://app.1lookup.io/openapi.json
+    http_status: 200
+    fetched: '2026-08-09'
+    note: 200 but text/html Next.js shell — soft-404, not a spec

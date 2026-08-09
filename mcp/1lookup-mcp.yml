@@ -1,0 +1,89 @@
+generated: '2026-08-09'
+method: searched
+status: published
+source: https://www.1lookup.io/products/mcp
+description: >-
+  1Lookup ships a first-party hosted (remote) MCP connector at https://app.1lookup.io/api/mcp. It is a
+  URL-only integration — no SDK, no pasted API key — authorized with OAuth 2.1 (authorization code +
+  PKCE, dynamic client registration) against app.1lookup.io. Tool calls spend the same universal credits
+  as the REST API and honor the caller's plan limits.
+server:
+  name: 1lookup
+  transport: http
+  url: https://app.1lookup.io/api/mcp
+  docs: https://www.1lookup.io/products/mcp
+  clients_documented:
+    - Claude
+    - Cursor
+    - ChatGPT
+    - any MCP client
+authorization:
+  model: oauth2.1
+  protected_resource_metadata: https://app.1lookup.io/.well-known/oauth-protected-resource
+  authorization_server_metadata: https://app.1lookup.io/.well-known/oauth-authorization-server
+  issuer: https://app.1lookup.io
+  authorization_endpoint: https://app.1lookup.io/api/mcp/oauth/authorize
+  token_endpoint: https://app.1lookup.io/api/mcp/oauth/token
+  registration_endpoint: https://app.1lookup.io/api/mcp/oauth/register
+  grant_types: [authorization_code, refresh_token]
+  code_challenge_methods: [S256]
+  bearer_methods: [header]
+  scopes: [lookup]
+  revocable: true
+introspection:
+  tools_list_probed: '2026-08-09'
+  tools_list_status: 401
+  tools_list_body: '{"error":"invalid_token","error_description":"No authorization provided"}'
+  note: >-
+    tools/list is auth-gated. The live inputSchema for each tool requires an authenticated OAuth token,
+    so the tools below are recorded from the provider's published MCP product page (names + descriptions
+    + example call shapes verbatim) and NOT from a live tools/list response. Input schemas are unknown.
+tools:
+  - name: validate_phone
+    description: >-
+      Confirm a line is real and active before dialing, texting or saving it; returns line type, carrier,
+      DNC status and a fraud score.
+    published_example: 'validate_phone("+1 415 555 0132") -> mobile · Verizon · reachable · risk 15'
+    rest_equivalent: POST /api/v1/phone
+    credits: 1
+  - name: verify_email
+    description: >-
+      Check that an address exists and is not disposable, role-based or on a bad domain before sending.
+    published_example: 'verify_email("j.ramos@acme.co") -> valid · not disposable · deliverable 98'
+    rest_equivalent: POST /api/v1/email
+    credits: 1
+  - name: ip_lookup
+    description: >-
+      Geolocate an IP and flag proxies, VPNs, Tor and datacenter ranges to catch fake signups and risky
+      sessions.
+    published_example: 'ip_lookup("72.14.201.5") -> datacenter · hosting · risk 62'
+    rest_equivalent: POST /api/v1/ip
+    credits: 1
+  - name: bulk_verify
+    description: Validate a whole list of phones or emails in a single call instead of looping one lookup at a time.
+    published_example: 'bulk_verify([ …1,000 emails ]) -> 1,000 checked · 1 credit each'
+    rest_equivalent: POST /api/v1/bulk/jobs
+    credits: 1 per record
+  - name: get_account
+    description: >-
+      Read remaining credits and plan status so an agent can pace itself before a large run.
+    published_example: 'get_account() -> plan: growth · credits: 48,210 remaining'
+    rest_equivalent: GET /api/v1/account
+    credits: 0
+access_notes:
+  - Access is described by the provider as read-only across the five tools.
+  - Calls bill against the caller's existing 1Lookup plan credits; no separate MCP billing.
+  - Identical lookups are served from a 7-day cache.
+  - Connector access can be revoked from the 1Lookup account at any time.
+  - Programmatic access is a paid feature; a 7-day trial is available.
+x-evidence:
+  - url: https://www.1lookup.io/products/mcp
+    http_status: 200
+    fetched: '2026-08-09'
+  - url: https://app.1lookup.io/api/mcp
+    http_status: 401
+    method: POST tools/list
+    fetched: '2026-08-09'
+  - url: https://app.1lookup.io/.well-known/oauth-protected-resource
+    http_status: 200
+    fetched: '2026-08-09'

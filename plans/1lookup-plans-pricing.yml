@@ -1,0 +1,168 @@
+specification: API Commons Plans
+specificationVersion: '0.1'
+provider: 1Lookup
+providerId: 1lookup
+generated: '2026-08-09'
+method: searched
+created: '2026-08-09'
+modified: '2026-08-09'
+tags:
+  - Data Validation
+  - Enrichment
+  - Fraud Prevention
+description: >-
+  1Lookup is subscription-priced with a single universal credit balance spanning every product. Four
+  published monthly tiers plus a custom enterprise tier; every plan starts with a 7-day free trial, and
+  API access is included on all paid plans. Free, rate-limited browser tools are available without
+  signup, but programmatic access is a paid feature. Unused subscription credits roll over for up to
+  three months; annual billing is the equivalent of two months free.
+sources:
+  - https://www.1lookup.io/pricing
+  - https://www.1lookup.io/products/mcp
+currency: USD
+billing_periods: [monthly, annual]
+free_trial:
+  length: 7 days
+  card_required: true
+  included_credits:
+    starter: $5 in universal credits
+    growth_and_above: $20 in universal credits
+plans:
+  - id: 1lookup-starter
+    name: Starter
+    type: subscription
+    price: 99
+    period: month
+    description: Entry tier; fits roughly 20,000 core validations a month at $4.95 per 1,000.
+    entries:
+      - label: Included universal credits
+        name: credits_included
+        type: included
+        metric: credit
+        limit: 20000
+        timeFrame: month
+      - label: Effective cost per 1,000 core lookups
+        name: cost_per_1000
+        type: metered
+        metric: lookups
+        unit: 1000
+        price: '$4.95'
+  - id: 1lookup-growth
+    name: Growth
+    type: subscription
+    price: 299
+    period: month
+    description: 85,000 credits included; ~$3.52 per 1,000 core lookups. Priority email and chat support.
+    entries:
+      - label: Included universal credits
+        name: credits_included
+        type: included
+        metric: credit
+        limit: 85000
+        timeFrame: month
+      - label: Effective cost per 1,000 core lookups
+        name: cost_per_1000
+        type: metered
+        metric: lookups
+        unit: 1000
+        price: '$3.52'
+  - id: 1lookup-professional
+    name: Professional
+    type: subscription
+    price: 799
+    period: month
+    description: 250,000 credits included; ~$3.20 per 1,000 core lookups ($0.0032/lookup). Chat plus live meeting support.
+    entries:
+      - label: Included universal credits
+        name: credits_included
+        type: included
+        metric: credit
+        limit: 250000
+        timeFrame: month
+      - label: Effective cost per 1,000 core lookups
+        name: cost_per_1000
+        type: metered
+        metric: lookups
+        unit: 1000
+        price: '$3.20'
+  - id: 1lookup-enterprise
+    name: Enterprise
+    type: subscription
+    price: 1999
+    period: month
+    description: 1,000,000 credits included; $2.00 per 1,000 core lookups ($0.0020/lookup). Dedicated CSM.
+    entries:
+      - label: Included universal credits
+        name: credits_included
+        type: included
+        metric: credit
+        limit: 1000000
+        timeFrame: month
+      - label: Effective cost per 1,000 core lookups
+        name: cost_per_1000
+        type: metered
+        metric: lookups
+        unit: 1000
+        price: '$2.00'
+  - id: 1lookup-custom
+    name: Custom Enterprise
+    type: custom
+    price: 2000
+    period: month
+    description: >-
+      Above 1,000,000 credits/month. Volume discounts, dedicated support, custom integrations and SLA
+      commitments. Starting at $2,000/month; contact sales for a quote.
+credit_costs:
+  unit: universal credit
+  note: One balance across all products; the dashboard shows each product's rate before a lookup runs.
+  core_1_credit:
+    - Phone validation
+    - Email verification
+    - IP intelligence
+    - Phone spam check
+    - Number type lookup
+    - Search intent
+  tiered:
+    - {product: Prospect search, credits: 2, basis: per search}
+    - {product: Mobile number portability (MNP), credits: 3}
+    - {product: Link-in-bio lookup, credits: 3}
+    - {product: HLR live network lookup, credits: 5}
+    - {product: Email enrichment, credits: 5}
+    - {product: Social post lookup, credits: 5}
+    - {product: Video transcript, credits: 5}
+    - {product: Social search, credits: 5}
+    - {product: Keyword metrics, credits: 6}
+    - {product: Audio transcription, credits: 6, basis: per minute}
+    - {product: Reverse phone / email / IP, credits: 10}
+    - {product: Email and phone append, credits: 10}
+    - {product: Domain intelligence, credits: 10}
+    - {product: Domain authority, credits: 10}
+    - {product: Skip tracing, credits: 10}
+    - {product: Phone scrub (DNC + risk flags), credits: 10}
+    - {product: Business lookup, credits: 10}
+    - {product: Social profile check, credits: 10}
+    - {product: Ad library lookup, credits: 10}
+    - {product: Backlink overview, credits: 13}
+    - {product: Property lookup, credits: 15}
+    - {product: Company profile lookup, credits: 25}
+    - {product: Business verify, credits: 30}
+    - {product: Mobile finder, credits: 40}
+    - {product: TikTok audience demographics, credits: 40}
+    - {product: Company firmographics, credits: 75}
+    - {product: B2B contact append, credits: 75, basis: per reveal}
+    - {product: Target account search, credits: 75, basis: up to 100 companies}
+    - {product: Website audience intelligence, credits: 86, basis: per report}
+  success_based_billing: >-
+    Several products are only charged on a match — business verify, business lookup, company profile
+    lookup, social profile check, social post lookup, video transcript, social search, ad library lookup,
+    TikTok audience demographics, link-in-bio lookup, property lookup, mobile finder, email enrichment,
+    company firmographics and B2B contact append.
+policies:
+  rollover: Unused subscription credits roll over for up to 3 months.
+  auto_replenish: Optional; renews when the balance drops to 20 credits or fewer, with a 10% bonus.
+  contracts: No contracts, no setup fees, no monthly minimums; upgrade/downgrade/cancel anytime.
+  annual_discount: Equivalent of 2 months free.
+x-evidence:
+  - url: https://www.1lookup.io/pricing
+    http_status: 200
+    fetched: '2026-08-09'
