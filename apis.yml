@@ -13,7 +13,7 @@ description: >-
 image: https://www.1lookup.io/images/featured/pages/homepage.png
 url: https://1lookup.apievangelist.com/apis.yml
 created: '2026-08-08'
-modified: '2026-08-09'
+modified: '2026-08-14'
 specificationVersion: '0.21'
 tags:
   - phone validation
@@ -30,9 +30,11 @@ apis:
   - name: 1Lookup REST API
     description: >-
       RESTful API over HTTPS covering all 1Lookup products (phone/email/IP validation, fraud, enrichment,
-      B2B data, SEO intelligence). API-key Bearer auth, JSON bodies, job-based bulk processing. Roughly
-      47 documented operations, almost all POST, priced against a universal credit balance. No OpenAPI or
-      other machine-readable contract is published.
+      B2B data, SEO intelligence). API-key Bearer auth (sk_live_ keys, organization-scoped), JSON bodies,
+      one response envelope on every product, and job-based bulk processing up to 100,000 rows with an
+      Idempotency-Key contract and signed webhook callbacks. 46 documented operations, almost all POST,
+      priced against a universal credit balance. No OpenAPI or other machine-readable contract is
+      published.
     humanURL: https://app.1lookup.io/api
     baseURL: https://app.1lookup.io/api/v1
     tags:
@@ -62,6 +64,14 @@ apis:
         url: rate-limits/1lookup-rate-limits.yml
       - type: Lifecycle
         url: lifecycle/1lookup-lifecycle.yml
+      - type: Idempotency
+        url: conventions/1lookup-conventions.yml
+      - type: Webhooks
+        url: asyncapi/1lookup-webhooks.yml
+      - type: DataModel
+        url: data-model/1lookup-data-model.yml
+      - type: Examples
+        url: examples/1lookup-examples.yml
   - name: 1Lookup MCP Server
     description: >-
       First-party hosted/remote MCP connector with OAuth 2.1 auth (authorization code + PKCE, dynamic
@@ -86,6 +96,8 @@ apis:
         url: https://www.1lookup.io/products/mcp
       - type: OAuthScopes
         url: scopes/1lookup-scopes.yml
+      - type: WellKnown
+        url: https://www.1lookup.io/.well-known/mcp/server-card.json
   - name: 1Lookup LLMs Index
     description: >-
       Machine-readable content indexes (llms.txt and llms-full.txt) for AI and answer engines, indexing
@@ -187,8 +199,22 @@ common:
   url: llms/1lookup-llms.txt
 - type: AgentSkill
   url: skills/_index.yml
+- type: Idempotency
+  url: conventions/1lookup-conventions.yml
+- type: Webhooks
+  url: asyncapi/1lookup-webhooks.yml
+- type: DataModel
+  url: data-model/1lookup-data-model.yml
+- type: Examples
+  url: examples/1lookup-examples.yml
 x-enrichment:
-  date: '2026-08-09'
+  date: '2026-08-14'
   status: enriched
-  artifacts_added: 23
+  artifacts_added: 5
+  artifacts_updated: 14
   pass: local-v1
+  note: >-
+    1Lookup rewrote its API reference between 2026-08-09 and 2026-08-14: an Idempotency-Key contract on
+    bulk jobs, a signed webhook surface, a thirteen-code error registry, X-Request-Id, Retry-After, a
+    four-tier rate-limit model, a versioning policy, two new products, and a machine-readable MCP server
+    card at www.1lookup.io/.well-known/mcp/server-card.json. Still no OpenAPI and no A2A agent card.
