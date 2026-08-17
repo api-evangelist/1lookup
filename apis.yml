@@ -11,7 +11,7 @@ description: >-
   CSV validation, roughly twenty-five free rate-limited browser tools, and a first-party hosted MCP
   connector authorized with OAuth 2.1 that gives AI agents five of the core tools without an API key.
 image: https://www.1lookup.io/images/featured/pages/homepage.png
-url: https://1lookup.apievangelist.com/apis.yml
+url: https://raw.githubusercontent.com/api-evangelist/1lookup/refs/heads/main/apis.yml
 created: '2026-08-08'
 modified: '2026-08-14'
 specificationVersion: '0.21'
