@@ -1,0 +1,308 @@
+generated: '2026-08-14'
+method: searched
+source: https://app.1lookup.io/api
+docs: https://app.1lookup.io/api
+description: >-
+  Request/response examples published by 1Lookup, captured verbatim. 1Lookup publishes no OpenAPI, so
+  there are no in-spec `examples` for a scorer to read — but the reference itself is example-dense: every
+  one of the 46 endpoints prints a runnable request in five languages (cURL, Node.js, Python, PHP, Go)
+  and a real JSON response, and the core-concept pages print worked examples for the envelope, cost
+  metadata, cache hits, errors, 429 headers, retry logic and webhook signature verification. This file
+  is the index of that example surface plus the cross-cutting examples in full; per-endpoint payloads
+  stay at the source rather than being copied 46 times.
+coverage:
+  endpoints_documented: 46
+  endpoints_with_request_example: 46
+  endpoints_with_response_example: 46
+  languages: [curl, javascript, python, php, go]
+  note: >-
+    Counted from the reference's per-endpoint blocks, each of which carries a language tab set and a
+    "Response" block. Language tabs are rendered client-side from one source per endpoint.
+languages:
+  - {id: curl, label: cURL}
+  - {id: javascript, label: Node.js}
+  - {id: python, label: Python}
+  - {id: php, label: PHP}
+  - {id: go, label: Go}
+examples:
+  - id: complete-request
+    title: A complete request
+    kind: request
+    language: curl
+    operation: 'POST /api/v1/phone'
+    code: |
+      curl -X POST https://app.1lookup.io/api/v1/phone \
+        -H "Authorization: Bearer $ONELOOKUP_API_KEY" \
+        -H "Content-Type: application/json" \
+        -d '{ "phone_number": "+14155550123" }'
+  - id: complete-response
+    title: …and what comes back
+    kind: response
+    operation: 'POST /api/v1/phone'
+    code: |
+      {
+        "success": true,
+        "data": {
+          "request": { "type": "phone", "input": "+14155550123" },
+          "classification": { "line_type": "MOBILE", "number_status": "ACTIVE" },
+          "risk_assessment": { "fraud_score": 45, "risk_level": "MEDIUM" }
+        }
+      }
+    note: Abbreviated in the reference itself; the full envelope example is the next entry.
+  - id: envelope
+    title: The envelope
+    kind: response
+    operation: 'POST /api/v1/phone'
+    code: |
+      {
+        "success": true,
+        "data": {
+          "request": {
+            "id": "74d7c3df-c23d-4beb-8267-31c4a26751e6",
+            "type": "phone",
+            "input": "+14155550123",
+            "timestamp": "2026-08-13T09:15:23.883Z",
+            "processing_time_ms": 651
+          },
+          "metadata": {
+            "api_version": "1.0",
+            "schema_version": "1.0",
+            "credits_used": 1,
+            "credits_remaining": 9998,
+            "cache_hit": false,
+            "data_sources": ["carrier_lookup", "fcc_daily_data"]
+          },
+          "risk_assessment": {
+            "fraud_score": 45,
+            "risk_level": "MEDIUM",
+            "risk_factors": [],
+            "confidence_level": 70
+          },
+          "classification": { "line_type": "MOBILE" },
+          "insights": { "carrier": { "name": "T-Mobile USA" } },
+          "recommendations": {
+            "primary_action": "VERIFY",
+            "secondary_actions": ["SEND_SMS_OTP"],
+            "user_message": "Additional verification recommended."
+          }
+        }
+      }
+  - id: auth-header
+    title: Every request
+    kind: request
+    code: |
+      POST /api/v1/phone HTTP/1.1
+      Host: app.1lookup.io
+      Authorization: Bearer sk_live_…
+      Content-Type: application/json
+  - id: auth-error
+    title: Missing or invalid key
+    kind: error
+    status: 401
+    code: |
+      {
+        "success": false,
+        "error": {
+          "message": "Invalid or missing API key",
+          "code": "UNAUTHORIZED",
+          "type": "api_error"
+        }
+      }
+  - id: cost-of-a-call
+    title: Cost of a call
+    kind: response-fragment
+    code: |
+      "metadata": { "credits_used": 10, "credits_remaining": 9985, "cache_hit": false }
+  - id: cache-hit
+    title: Served from cache
+    kind: response-fragment
+    code: |
+      "metadata": { "credits_used": 0, "cache_hit": true }
+  - id: bypass-cache
+    title: Force a fresh lookup
+    kind: request
+    language: curl
+    operation: 'POST /api/v1/phone'
+    code: |
+      curl -X POST https://app.1lookup.io/api/v1/phone \
+        -H "Authorization: Bearer $ONELOOKUP_API_KEY" \
+        -H "Content-Type: application/json" \
+        -d '{ "phone_number": "+14155550123", "bypass_cache": true }'
+  - id: insufficient-credits
+    title: Out of credits
+    kind: error
+    status: 402
+    code: |
+      {
+        "success": false,
+        "error": {
+          "message": "Insufficient credits",
+          "code": "INSUFFICIENT_CREDITS",
+          "type": "api_error"
+        }
+      }
+  - id: rate-limited-headers
+    title: Headers on a 429
+    kind: error
+    status: 429
+    code: |
+      HTTP/1.1 429 Too Many Requests
+      Retry-After: 3
+      X-RateLimit-Limit: 200
+      X-RateLimit-Remaining: 0
+      X-RateLimit-Reset: 1786139880
+      X-Request-Id: 74d7c3df-c23d-4beb-8267-31c4a26751e6
+  - id: error-shape
+    title: Error shape
+    kind: error
+    status: 400
+    code: |
+      {
+        "success": false,
+        "error": {
+          "message": "Invalid email format",
+          "code": "INVALID_INPUT",
+          "type": "api_error"
+        }
+      }
+  - id: bulk-lifecycle
+    title: The full bulk lifecycle
+    kind: request
+    language: curl
+    operations:
+      - 'POST /api/v1/bulk/jobs'
+      - 'GET /api/v1/bulk/jobs/{job_id}'
+      - 'GET /api/v1/bulk/jobs/{job_id}/results'
+    code: |
+      # 1. Submit. The Idempotency-Key makes the retry safe.
+      curl -X POST https://app.1lookup.io/api/v1/bulk/jobs \
+        -H "Authorization: Bearer $ONELOOKUP_API_KEY" \
+        -H "Content-Type: application/json" \
+        -H "Idempotency-Key: $(uuidgen)" \
+        -d '{
+          "type": "email_validation",
+          "inputs": ["jane.doe@acme.com", "john.doe@example.com"],
+          "webhook_url": "https://example.com/hooks/1lookup"
+        }'
+
+      # 2. Poll for progress.
+      curl https://app.1lookup.io/api/v1/bulk/jobs/JOB_ID \
+        -H "Authorization: Bearer $ONELOOKUP_API_KEY"
+
+      # 3. Read rows, or download the signed CSV from results_url.
+      curl "https://app.1lookup.io/api/v1/bulk/jobs/JOB_ID/results?limit=1000&offset=0" \
+        -H "Authorization: Bearer $ONELOOKUP_API_KEY"
+  - id: bulk-results-response
+    title: Bulk job results
+    kind: response
+    operation: 'GET /api/v1/bulk/jobs/{job_id}/results'
+    code: |
+      {
+        "success": true,
+        "data": {
+          "job_id": "235ecda1-9e98-46f1-9cdf-4d410e937e38",
+          "status": "completed",
+          "results_url": "https://1lookup-uploads.s3.us-east-1.amazonaws.com/…",
+          "lookups": [
+            {
+              "id": "3f1c9a20-6b6e-4f57-9f0a-1d2c3b4a5e6f",
+              "input": "+447911123401",
+              "status": "completed",
+              "tokens_consumed": 5,
+              "response_data": {}
+            }
+          ],
+          "pagination": { "limit": 100, "offset": 0, "returned": 1, "has_more": false }
+        }
+      }
+  - id: monitor-create-response
+    title: Create a job change monitor
+    kind: response
+    operation: 'POST /api/v1/job-change-monitors'
+    code: |
+      {
+        "success": true,
+        "data": {
+          "monitor": {
+            "id": "cmon_8f2a1c",
+            "name": "Key champions",
+            "frequency": "weekly",
+            "alert_email": true,
+            "webhook_url": null,
+            "active": true,
+            "created_at": "2026-07-30T12:00:00.000Z"
+          },
+          "webhook_secret": null
+        }
+      }
+  - id: webhook-delivery-headers
+    title: Delivery headers
+    kind: webhook
+    code: |
+      POST /hooks/1lookup HTTP/1.1
+      Content-Type: application/json
+      X-1Lookup-Signature: sha256=9f86d081884c7d65…
+  - id: webhook-verify
+    title: Verify the signature
+    kind: webhook
+    language: javascript
+    see: asyncapi/1lookup-webhooks.yml
+  - id: account-response
+    title: Retrieve your account
+    kind: response
+    operation: 'GET /api/v1/account'
+    code: |
+      {
+        "success": true,
+        "data": {
+          "organization": { "name": "My Company", "active": true },
+          "subscription": { "status": "active", "plan": { "name": "Pro Plan" } },
+          "tokens": { "total_available": 11250 },
+          "usage": { "current_period": { "lookups": 250 } }
+        }
+      }
+  - id: production-client
+    title: A production-shaped client
+    kind: pattern
+    language: javascript
+    summary: >-
+      Retry only 429/500/503, honour Retry-After before exponential backoff, capture X-Request-Id on
+      every response, 90s client timeout, throw a typed error carrying error.code and the request id.
+    see: conventions/1lookup-conventions.yml
+  - id: error-handler-python
+    title: One handler, every endpoint
+    kind: pattern
+    language: python
+    summary: >-
+      RETRYABLE = {429, 500, 502, 503, 504}; branch on error["code"], raise TransientError with
+      Retry-After for retryables and PermanentError otherwise.
+  - id: signup-risk-gate
+    title: Sign-up risk gate
+    kind: recipe
+    language: javascript
+    operations: ['POST /api/v1/email', 'POST /api/v1/phone']
+    summary: >-
+      Fire the email and phone lookups in parallel; BLOCK if either recommendations.primary_action is
+      BLOCK, REVIEW if the combined fraud_score exceeds 90, otherwise APPROVE.
+  - id: bounded-concurrency
+    title: Bounded concurrency
+    kind: recipe
+    language: javascript
+    summary: >-
+      Twenty workers off a shared queue keeps inside the limits and finishes a 10k list in minutes;
+      above ~5k rows the docs direct you to a bulk job instead.
+  - id: mcp-client-config
+    title: Connect an AI client over MCP
+    kind: config
+    see: mcp/1lookup-mcp.yml
+placeholders_note: >-
+  Key material in every published example is an ellipsis placeholder (sk_live_…, whsec_…, sha256=9f86…);
+  no live credential appears in the reference or in this file.
+gaps:
+  - Examples are prose-embedded, not machine-readable — no OpenAPI examples/, no Postman collection.
+  - Only one product (phone) gets a fully expanded envelope example; other products show abbreviated ones.
+  - No example of a webhook callback body, because no callback schema is published.
+x-evidence:
+  - url: https://app.1lookup.io/api
+    http_status: 200
+    fetched: '2026-08-14'

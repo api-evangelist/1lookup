@@ -1,71 +1,148 @@
-generated: '2026-08-09'
+generated: '2026-08-14'
 method: searched
 source: https://app.1lookup.io/api
 docs: https://app.1lookup.io/api
 description: >-
   Cross-cutting request/response semantics for the 1Lookup REST API, transcribed from the published API
-  reference. Absences below are recorded as absences, not guessed: 1Lookup documents no idempotency key,
-  no pagination envelope for single lookups, no request-id header, and no API versioning policy beyond
-  the /v1 path segment.
+  reference. MATERIAL CHANGE since the 2026-08-09 pass: the reference was rewritten and now documents
+  things it previously did not — an Idempotency-Key contract on bulk-job creation (with a 24-hour
+  replay window, an Idempotent-Replay marker and a 409 IDEMPOTENCY_CONFLICT code), an X-Request-Id on
+  every response, a signed outbound webhook surface, a full error-code registry, a Retry-After header,
+  a four-tier rate-limit model applied per API key, and a stated versioning commitment. The absences
+  recorded below are still absences, not guesses.
 base_url: https://app.1lookup.io/api/v1
 transport:
   protocol: HTTPS
   request_format: application/json
   response_format: application/json
   predominant_method: POST
-  note: Nearly every product is a POST with a JSON body; only account status and bulk-job reads are GET.
+  note: >-
+    Nearly every product is a POST with a small JSON body; only account, bulk-job reads and monitor
+    reads are GET. The reference states 46 live endpoints.
 authentication:
   style: bearer-api-key
-  header: 'Authorization: Bearer YOUR_API_KEY'
+  header: 'Authorization: Bearer sk_live_…'
+  key_prefix: sk_live_
+  scope: organization (not per person)
+  free_plan: 'A key on a free-plan organization returns 403 UPGRADE_REQUIRED even with credits on hand.'
+  rotation: 'Several keys can be held at once, so rotation is create-new, deploy, delete-old.'
   see: authentication/1lookup-authentication.yml
 idempotency:
-  supported: false
-  documented: false
-  note: >-
-    No Idempotency-Key header, no idempotent-retry contract, and no request-replay window are documented.
-    Lookups are read-shaped so a repeat is usually harmless, but the 7-day result cache — not an
-    idempotency contract — is what makes a repeat cheap. Agents cannot safely assume exactly-once
-    semantics on credit-consuming calls.
+  supported: true
+  documented: true
+  header: Idempotency-Key
+  value: client-supplied UUID, fresh per job
+  scope: 'POST /api/v1/bulk/jobs (bulk job creation)'
+  retention: 24 hours
+  replay_marker: 'Idempotent-Replay: true'
+  replay_behaviour: >-
+    A retry with the same key returns the ORIGINAL job rather than creating and charging for a second
+    one — the docs state this explicitly as the reason to send it on every create.
+  conflict:
+    status: 409
+    code: IDEMPOTENCY_CONFLICT
+    meaning: A request with the same Idempotency-Key is still in flight. Retry shortly.
+  not_covered:
+    - >-
+      Single-lookup POSTs (the other ~42 operations) have no idempotency key. They are read-shaped and
+      credit-consuming; the 7-day result cache — not an idempotency contract — is what makes a repeat
+      free. An agent must not assume exactly-once semantics on those.
+    - Job-change-monitor creation has no documented idempotency key.
+  quote: 'Send a fresh UUID per job. A retry with the same key returns the original job, marked Idempotent-Replay: true, instead of creating and charging for a second one. Keys are remembered for 24 hours.'
 caching:
   result_cache: 7 days
-  scope: identical lookup inputs
+  key: product + exact input
+  charge_on_hit: 0 credits
+  response_marker: 'metadata.cache_hit: true'
+  shared_scope: >-
+    A teammate's earlier lookup serves you the same stored record at the normal price — never more than
+    the original call was charged.
   bypass:
     parameter: bypass_cache
     type: boolean
     in: request body
-    applies_to: single-lookup POST endpoints
-    description: Skip the 7-day cache and force a fresh lookup.
-  refresh: Phone and carrier data refreshed every 24 hours from primary sources.
+    applies_to: every single-lookup POST endpoint (documented as a global parameter)
+    effect: Skips the cache, forces a fresh billable lookup, and replaces the cached record for the rest of the window.
+  refresh: Live-fetch products take seconds on a first call and milliseconds for the next seven days.
 pagination:
   single_lookups: none
-  bulk_jobs:
-    style: paged
+  bulk_job_results:
+    style: limit/offset
     endpoint: 'GET /api/v1/bulk/jobs/{job_id}/results'
-    description: Fetch paginated persisted lookup rows for a bulk job.
-    note: Page parameter names are not published in the reference.
+    params:
+      limit: {default: 100, maximum: 1000}
+      offset: {default: 0}
+    response_object: data.pagination
+    response_fields: [limit, offset, returned, has_more]
+  monitor_events:
+    style: page/limit
+    endpoint: 'GET /api/v1/job-change-monitors/{id}/events'
+    params: [page, limit]
   search_endpoints:
     account_search: Up to 100 companies per search
-    prospect_search: Preview rows with masked surnames and email-availability flags; reveal one row with B2B Contact Append
+    prospect_search: Preview rows; reveal one row with B2B Contact Append (75 credits per reveal)
     social_search: One page of matching results per search
+response_envelope:
+  success_field: success
+  data_field: data
+  sections:
+    always: [request, metadata, classification]
+    conditional: [risk_assessment, insights, recommendations]
+  see: data-model/1lookup-data-model.yml
 async:
-  pattern: job-and-poll
+  pattern: job-and-poll, with an optional signed callback
   create: 'POST /api/v1/bulk/jobs'
   status: 'GET /api/v1/bulk/jobs/{job_id}'
   results: 'GET /api/v1/bulk/jobs/{job_id}/results'
-  supported_products: [HLR, MNP, Number Type, Email Validation, Reverse Email Append]
-  completion_artifact: Signed CSV download URL, expires after 1 hour
-  budget_note: Status and result polling do not consume lookup-rate budget.
-  callbacks: none documented (no webhooks)
+  max_rows: 100000
+  credit_preflight: >-
+    The whole job is priced before it starts; if the balance cannot cover every row the job is refused
+    with 402 rather than stopping half way.
+  supported_types:
+    - hlr_lookup
+    - mnp_lookup
+    - nt_lookup
+    - email_validation
+    - reverse_email_append
+    - domain_authority
+    - domain_age
+    - backlink_overview
+    - keyword_metrics
+    - company_firmographics
+    - b2b_contact_append
+    - business_verify
+    - business_lookup
+    - company_profile_lookup
+    - linkedin_profile_lookup
+    - social_profile_check
+    - property_lookup
+    - social_post_lookup
+    - video_transcript
+    - audience_demographics
+    - link_in_bio_lookup
+  not_supported: Search-style products stay single-call by design.
+  completion_artifact: Signed CSV download URL (results_url), expires one hour after it is issued.
+  budget_note: Status and result polling are free and do not count against lookup rate limits.
+  callbacks: 'webhook_url on create; single signed POST on completion — see asyncapi/1lookup-webhooks.yml'
+webhooks:
+  supported: true
+  signature_header: X-1Lookup-Signature
+  algorithm: HMAC-SHA256 over the raw body, 'sha256=' prefix
+  secret_prefix: whsec_
+  delivery: one attempt, 5s timeout, redirects not followed
+  see: asyncapi/1lookup-webhooks.yml
 rate_limiting:
-  limit: 1000 requests/minute
-  scope: organization
-  window: resets every minute
-  headers:
-    - X-RateLimit-Limit
-    - X-RateLimit-Remaining
-    - X-RateLimit-Reset
-  on_exceed: HTTP 429
-  guidance: Docs recommend exponential backoff on 429.
+  model: four tiers, most applied per API key
+  tiers:
+    - {name: Standard lookups, scope: per key, limit: 200, window: 10 seconds}
+    - {name: Live-fetch lookups, scope: per key, limit: 1000, window: minute, applies_to: 'HLR, MNP, number type, business, property, company profile, LinkedIn, social'}
+    - {name: Hard ceiling, scope: per key, limit: 500, window: second, also: '5,000 per 10 seconds across everything'}
+    - {name: Account and monitoring, scope: per organization, limit: 1000, window: minute}
+  headers: [X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, Retry-After]
+  reset_format: X-RateLimit-Reset is a Unix timestamp in seconds.
+  on_exceed: 'HTTP 429 RATE_LIMIT_EXCEEDED'
+  guidance: Respect Retry-After before falling back to exponential backoff; keep concurrency bounded.
+  posture_quote: 'Limits are safety nets against runaway loops and leaked keys, not throttles on normal use.'
   see: rate-limits/1lookup-rate-limits.yml
 error_envelope:
   shape: |
@@ -75,32 +152,48 @@ error_envelope:
     }
   fields:
     success: boolean, false on error
-    error.message: human-readable message
-    error.code: machine code, e.g. INVALID_INPUT
+    error.message: human-readable, explicitly NOT stable — do not branch on it
+    error.code: machine code, documented as stable
     error.type: error class, e.g. api_error
+  retry_policy: 'Retry 429, 500 and 503 only. Every 4xx below 429 will fail again identically.'
   rfc9457: false
   see: errors/1lookup-problem-types.yml
 metering:
   unit: universal credits
   billing: One balance across every product; core validations 1 credit, enrichment 2-86 credits.
-  success_based: >-
-    A number of products are only charged on a match (business-verify, business-lookup,
-    company-profile-lookup, social-*, video-transcript, ad-library-lookup, audience-demographics,
-    link-in-bio-lookup, property-lookup, mobile-finder, email-enrichment, company-firmographics,
-    b2b-contact-append).
+  charged_on: successful lookup completion; a 4xx validation error costs nothing
+  success_based: Enrichment and live-fetch products charge 0 credits when there is no match.
+  metered: 'Audio Transcription is per minute; a hold is taken from expected_duration_minutes and settled against the true duration.'
+  per_call_disclosure: 'metadata.credits_used and metadata.credits_remaining on every response.'
   balance_check: 'GET /api/v1/account'
-  insufficient_credits: HTTP 402
+  insufficient_credits: 'HTTP 402 INSUFFICIENT_CREDITS — nothing is charged.'
 versioning:
   scheme: uri-path
   current: v1
-  policy_published: false
+  policy_published: true
+  policy_url: https://app.1lookup.io/api
+  additive: >-
+    New endpoints, new fields inside insights and classification, and new enum values can appear at any
+    time. Consumers are told to parse defensively and ignore unknown fields.
+  breaking: 'Removing, renaming or retyping a field means a new version path, not a silent edit to v1.'
+  stability_quote: 'Everything documented here is v1, and v1 is not going to move under you.'
+  metadata_versions: 'Every response also carries metadata.api_version and metadata.schema_version (both "1.0").'
   see: lifecycle/1lookup-lifecycle.yml
 tracing:
-  request_id_header: none documented
+  request_id_header: X-Request-Id
+  also_in_body: data.request.id on successful lookups
+  guidance: 'Log it; quoting one to support@1lookup.io is the documented fast path on a support question.'
+timeouts:
+  client_guidance: Set a client timeout above 60 seconds for live-fetch lookups (the reference's own sample uses 90s).
+gaps:
+  - Idempotency covers bulk-job creation only, not the 42 single-lookup operations.
+  - No RFC 9457 problem+json, and no dereferenceable type URIs on errors.
+  - No RFC 9861 RateLimit-* fields; the de-facto X-RateLimit-* set only.
+  - No machine-readable contract of any kind (no OpenAPI), so none of the above is verifiable by a tool.
 x-evidence:
   - url: https://app.1lookup.io/api
     http_status: 200
-    fetched: '2026-08-09'
+    fetched: '2026-08-14'
   - url: https://www.1lookup.io/pricing
     http_status: 200
-    fetched: '2026-08-09'
+    fetched: '2026-08-14'

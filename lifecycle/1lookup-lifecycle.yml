@@ -1,28 +1,50 @@
-generated: '2026-08-09'
+generated: '2026-08-14'
 method: searched
 source: https://app.1lookup.io/api
 description: >-
-  1Lookup's published lifecycle posture is thin. The API is versioned only by the /v1 path segment; no
-  versioning policy, deprecation policy, Sunset/Deprecation header support, changelog, roadmap or public
-  status page was found. SLA commitments are mentioned only as part of a custom enterprise contract.
-  Every absence below was probed, not assumed.
+  1Lookup's lifecycle posture improved between 2026-08-09 and 2026-08-14: the rewritten reference now
+  carries a "Versioning and support" section that states a real stability contract — v1 will not move
+  under you, additive changes ship continuously, and breaking changes get a new version path. That is a
+  published versioning policy where there was none. Everything else is still absent and was re-probed
+  today: no changelog, no roadmap, no status page, no deprecation/Sunset contract, and no public SLA.
 versioning:
   scheme: uri-path
   current: v1
   base: https://app.1lookup.io/api/v1
-  policy_url: null
-  policy_published: false
+  policy_url: https://app.1lookup.io/api
+  policy_published: true
+  stability_commitment: 'Everything documented here is v1, and v1 is not going to move under you.'
+  additive_changes: >-
+    New endpoints, new fields inside insights and classification, and new enum values can appear at any
+    time. Consumers are instructed to parse defensively and ignore unknown fields.
+  breaking_changes: >-
+    Removing a field, renaming one, or changing its type means a new version path, not a silent edit
+    to v1.
+  response_versions:
+    api_version: '1.0'
+    schema_version: '1.0'
+    location: data.metadata on every successful response
 deprecation:
   policy_url: null
   policy_published: false
   sunset_header: unknown
   deprecation_header: unknown
-  note: RFC 8594 Sunset / Deprecation header support is not documented.
+  note: >-
+    The versioning commitment implies old versions keep working, but no deprecation timeline, no
+    end-of-life window and no RFC 8594 Sunset/Deprecation header contract is documented. There is also
+    no published record of a v0 or any retired endpoint.
 change_log:
   url: null
   published: false
+  note: >-
+    The single largest operational gap. The reference was materially rewritten between 2026-08-09 and
+    2026-08-14 — an idempotency contract, a webhook surface, a thirteen-code error registry, a new
+    rate-limit model and at least two new endpoints (domain-age, linkedin-profile-lookup) appeared —
+    and none of it is announced anywhere a consumer can subscribe to. Under the provider's own
+    "additive changes ship continuously" policy, a dated changelog is the missing half of the contract.
   probed:
     - {url: 'https://www.1lookup.io/changelog', status: 404}
+    - {url: 'https://www.1lookup.io/api/changelog', status: 404}
 roadmap:
   url: null
   published: false
@@ -34,6 +56,10 @@ status_page:
   probed:
     - {url: 'https://status.1lookup.io', status: 0, note: no DNS resolution}
     - {url: 'https://www.1lookup.io/status', status: 404}
+  note: >-
+    The API does publish a SERVICE_UNAVAILABLE (503) code for upstream degradation with a circuit
+    breaker and Retry-After, so degradation is signalled in-band on the call — but there is no
+    out-of-band place to look when calls start failing.
 sla:
   url: null
   uptime_target: null
@@ -41,27 +67,43 @@ sla:
     "SLA commitments" are listed as a feature of the custom enterprise plan (starting at $2,000/month)
     on the pricing page; no public SLA document is published.
   source: https://www.1lookup.io/pricing
+support:
+  channel: support@1lookup.io
+  guidance: Quote the X-Request-Id from the call in question.
+  plan_tiers: 'Email (Starter), priority email + chat (Growth), chat + live meeting (Professional), dedicated CSM (Enterprise).'
 data_lifecycle:
   result_cache: 7 days
+  idempotency_key_retention: 24 hours
+  results_url_expiry: 1 hour after issue
   data_refresh: Phone and carrier data refreshed every 24 hours from primary sources.
   retention: Automatic data deletion after 30 days.
   source: https://www.1lookup.io/security
 deprecated_operations: []
+surface_change_observed:
+  window: 2026-08-09 to 2026-08-14
+  new_endpoints_seen: ['POST /api/v1/domain-age', 'POST /api/v1/linkedin-profile-lookup']
+  new_contracts_seen: [Idempotency-Key on bulk jobs, signed webhooks, full error-code registry, X-Request-Id, Retry-After, four-tier rate limits, versioning policy]
+  announced_by_provider: false
+  note: Recorded from two dated captures of https://app.1lookup.io/api by this pipeline, not from a provider announcement.
 gaps:
   - No public status page or uptime history.
-  - No changelog or release notes, so API consumers have no way to detect additive or breaking changes.
+  - No changelog or release notes, despite a stated policy of continuous additive change.
   - No deprecation policy or Sunset header contract.
   - No published roadmap.
+  - No public SLA outside a custom enterprise contract.
 x-evidence:
   - url: https://app.1lookup.io/api
     http_status: 200
-    fetched: '2026-08-09'
+    fetched: '2026-08-14'
   - url: https://www.1lookup.io/changelog
     http_status: 404
-    fetched: '2026-08-09'
+    fetched: '2026-08-14'
   - url: https://www.1lookup.io/status
     http_status: 404
-    fetched: '2026-08-09'
+    fetched: '2026-08-14'
+  - url: https://www.1lookup.io/roadmap
+    http_status: 404
+    fetched: '2026-08-14'
   - url: https://status.1lookup.io
     http_status: 0
-    fetched: '2026-08-09'
+    fetched: '2026-08-14'

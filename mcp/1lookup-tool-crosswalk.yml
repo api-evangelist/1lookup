@@ -1,27 +1,31 @@
-generated: '2026-08-09'
+generated: '2026-08-14'
 method: derived
-source: https://app.1lookup.io/api + https://www.1lookup.io/products/mcp
+source: https://app.1lookup.io/api + https://www.1lookup.io/.well-known/mcp/server-card.json
 description: >-
   Binding between 1Lookup's five published MCP tools and the REST operations behind them. IMPORTANT
   CAVEAT: 1Lookup publishes no OpenAPI/Swagger document, so the REST side of this crosswalk is keyed by
   the documented HTTP method + path (the docs expose no operationIds), and the MCP side is keyed by the
-  published tool names (tools/list is OAuth-gated, so no live inputSchema was observable). Neither side
-  was inferred — both are transcribed from the provider's own published pages.
+  tool names in the provider's machine-readable server card (tools/list is OAuth-gated, so no live
+  inputSchema was observable). Neither side was inferred — both are transcribed from documents 1Lookup
+  publishes. Refreshed 2026-08-14 against the rewritten reference (46 endpoints, two of them new) and
+  the newly published server card.
 surfaces:
   openapi:
     present: false
     note: >-
-      No machine-readable spec found. /openapi.json, /openapi.yaml and /swagger.json on app.1lookup.io
-      all answer 200 with the Next.js HTML shell (soft-404); /api/openapi.json, /api/v1/openapi.json and
-      /api-docs return 404; www.1lookup.io/openapi.json returns 404. The reference at
-      https://app.1lookup.io/api is hand-authored, server-rendered HTML.
+      No machine-readable spec found, re-probed 2026-08-14. app.1lookup.io/openapi.json and
+      /swagger.json answer 200 with the Next.js HTML shell (soft-404); /api/openapi.json,
+      /api/v1/openapi.json, /api/v1/swagger.json and /api-docs return 404; www.1lookup.io/openapi.json
+      returns 404; api.1lookup.io does not resolve. The reference at https://app.1lookup.io/api is
+      hand-authored, server-rendered HTML.
     reference: https://app.1lookup.io/api
   graphql:
     present: false
   mcp:
     url: https://app.1lookup.io/api/mcp
     gated: true
-    gate: OAuth 2.1 bearer (tools/list returned 401 invalid_token on 2026-08-09)
+    gate: OAuth 2.1 bearer (tools/list returned 401 invalid_token on 2026-08-14)
+    server_card: https://www.1lookup.io/.well-known/mcp/server-card.json
     manifest: mcp/1lookup-mcp.yml
 crosswalk:
   - tool: validate_phone
@@ -29,7 +33,7 @@ crosswalk:
     rest: ['POST /api/v1/phone']
     binding: rest
     confidence: high
-    note: Provider's MCP page and API reference describe the same phone-validation result shape (line type, carrier, DNC, fraud score).
+    note: Server card and API reference describe the same result shape (line type, carrier, DNC, fraud score).
   - tool: verify_email
     category: email-validation
     rest: ['POST /api/v1/email']
@@ -42,12 +46,16 @@ crosswalk:
     confidence: high
   - tool: bulk_verify
     category: bulk
-    rest: ['POST /api/v1/bulk/jobs', 'GET /api/v1/bulk/jobs/{job_id}', 'GET /api/v1/bulk/jobs/{job_id}/results']
-    binding: rest
+    rest: ['POST /api/v1/phone', 'POST /api/v1/email', 'POST /api/v1/ip']
+    binding: composite
     confidence: medium
     note: >-
-      REST bulk is asynchronous (create job, poll status, page results); the MCP tool is presented as a
-      single call. The tool most likely composes the job lifecycle server-side. Fan-out mapping, not 1:1.
+      CORRECTED 2026-08-14. The server card defines this as a synchronous call over "up to 50 phones,
+      emails, or IPs" returning a per-item result array at 1 credit per item — i.e. a server-side
+      fan-out of the three core single lookups, NOT the REST bulk-job lifecycle. It has no 1:1 REST
+      equivalent: POST /api/v1/bulk/jobs is asynchronous, takes up to 100,000 rows of one type, and
+      returns a job id. An agent that needs more than 50 items, or any product other than phone/email/
+      IP, must drop to REST.
   - tool: get_account
     category: account
     rest: ['GET /api/v1/account']
@@ -57,39 +65,41 @@ mcp_only: []
 rest_only:
   - capability: phone-intelligence
     operations:
-      - 'POST /api/v1/phone-spam'          # Spam / scam reputation
-      - 'POST /api/v1/phone-scrub'         # DNC status, line type, risk flags
-      - 'POST /api/v1/hlr-lookup'          # Live HLR reachability
-      - 'POST /api/v1/mnp-lookup'          # Mobile number portability
-      - 'POST /api/v1/nt-lookup'           # Number type classification
+      - 'POST /api/v1/phone-spam'
+      - 'POST /api/v1/phone-scrub'
+      - 'POST /api/v1/hlr-lookup'
+      - 'POST /api/v1/mnp-lookup'
+      - 'POST /api/v1/nt-lookup'
       - 'POST /api/v1/reverse-phone-lookup'
-      - 'POST /api/v1/phone-append'        # Skip trace
+      - 'POST /api/v1/phone-append'
       - 'POST /api/v1/mobile-finder'
   - capability: email-and-identity-append
     operations:
+      - 'POST /api/v1/email-enrichment'
       - 'POST /api/v1/email-append'
       - 'POST /api/v1/reverse-email-append'
-      - 'POST /api/v1/email-enrichment'
       - 'POST /api/v1/reverse-ip-append'
   - capability: b2b-company-and-contact-data
     operations:
       - 'POST /api/v1/company-firmographics'
-      - 'POST /api/v1/company-profile-lookup'
       - 'POST /api/v1/b2b-contact-append'
       - 'POST /api/v1/prospect-search'
       - 'POST /api/v1/account-search'
+      - 'POST /api/v1/company-profile-lookup'
+      - 'POST /api/v1/linkedin-profile-lookup'      # new since 2026-08-09
       - 'POST /api/v1/business-verify'
       - 'POST /api/v1/business-lookup'
   - capability: seo-and-web-intelligence
     operations:
-      - 'POST /api/v1/domain-authority'
-      - 'POST /api/v1/domain-seo-intelligence'
-      - 'POST /api/v1/backlink-overview'
-      - 'POST /api/v1/keyword-metrics'
-      - 'POST /api/v1/audience-intelligence'
-      - 'POST /api/v1/search-intent-lookup'
       - 'POST /api/v1/website-scraper'
       - 'POST /api/v1/website-contacts-scraper'
+      - 'POST /api/v1/domain-seo-intelligence'
+      - 'POST /api/v1/domain-authority'
+      - 'POST /api/v1/domain-age'                   # new since 2026-08-09
+      - 'POST /api/v1/backlink-overview'
+      - 'POST /api/v1/keyword-metrics'
+      - 'POST /api/v1/search-intent-lookup'
+      - 'POST /api/v1/audience-intelligence'
   - capability: social-and-media
     operations:
       - 'POST /api/v1/social-profile-check'
@@ -100,7 +110,7 @@ rest_only:
       - 'POST /api/v1/audience-demographics'
       - 'POST /api/v1/link-in-bio-lookup'
       - 'POST /api/v1/audio-transcription'
-  - capability: property
+  - capability: business-and-property
     operations:
       - 'POST /api/v1/property-lookup'
   - capability: monitoring
@@ -109,20 +119,40 @@ rest_only:
       - 'GET /api/v1/job-change-monitors'
       - 'POST /api/v1/job-change-monitors/{id}/contacts'
       - 'GET /api/v1/job-change-monitors/{id}/events'
+  - capability: bulk-jobs
+    operations:
+      - 'POST /api/v1/bulk/jobs'
+      - 'GET /api/v1/bulk/jobs/{job_id}'
+      - 'GET /api/v1/bulk/jobs/{job_id}/results'
+    note: >-
+      Reachable from an agent only for ≤50 items via bulk_verify's synchronous fan-out; the real
+      100,000-row asynchronous job surface, its Idempotency-Key contract and its webhook callback are
+      REST-only.
 coverage:
   tools_named: 5
   tools_bound: 5
   mcp_only: 0
-  rest_operations_documented: 47
-  rest_operations_with_tool: 6
+  rest_operations_documented: 46
+  rest_operations_with_tool: 4
   note: >-
-    The MCP connector exposes roughly an eighth of the documented REST surface — the three core
-    validation checks plus bulk and account. Every enrichment, B2B, SEO, social and media product is
-    REST-only and unreachable from an MCP client today.
+    The MCP connector exposes four of forty-six documented REST operations — the three core validation
+    checks plus account, with bulk_verify as a 50-item fan-out over the same three. Every enrichment,
+    B2B, SEO, social, media, property, monitoring and bulk-job product is REST-only and unreachable
+    from an MCP client today. The gap widened slightly this round: two new REST products shipped
+    (domain-age, linkedin-profile-lookup) and no new tools.
+agent_reachability:
+  without_api_key: 5 tools (OAuth 2.1, paid plan required)
+  requires_api_key: 46 REST operations
+  webhook_callbacks: REST only
+  idempotency: REST only (bulk-job creation)
 x-evidence:
   - url: https://app.1lookup.io/api
     http_status: 200
-    fetched: '2026-08-09'
-  - url: https://www.1lookup.io/products/mcp
+    fetched: '2026-08-14'
+  - url: https://www.1lookup.io/.well-known/mcp/server-card.json
     http_status: 200
-    fetched: '2026-08-09'
+    fetched: '2026-08-14'
+  - url: https://app.1lookup.io/api/mcp
+    http_status: 401
+    method: POST tools/list
+    fetched: '2026-08-14'

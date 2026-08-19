@@ -1,0 +1,43 @@
+{
+  "serverInfo": {
+    "name": "1lookup",
+    "version": "1.0.0",
+    "vendor": "1Lookup",
+    "description": "Phone, email, and IP validation for AI agents. OAuth 2.1, no API key.",
+    "homepageUrl": "https://www.1lookup.io/products/mcp",
+    "documentationUrl": "https://www.1lookup.io/mcp/oauth"
+  },
+  "transport": {
+    "type": "http",
+    "url": "https://app.1lookup.io/api/mcp"
+  },
+  "authentication": {
+    "type": "oauth2",
+    "protectedResourceMetadata": "https://app.1lookup.io/.well-known/oauth-protected-resource",
+    "authorizationServerMetadata": "https://app.1lookup.io/.well-known/oauth-authorization-server",
+    "scopes": ["lookup"]
+  },
+  "tools": [
+    {
+      "name": "validate_phone",
+      "description": "Validate a phone number: confirms it is real and active, and returns line type, carrier, DNC status, and a fraud/risk score. Spends 1 credit."
+    },
+    {
+      "name": "verify_email",
+      "description": "Verify an email address: checks that it exists and is deliverable, and flags disposable, role-based, and risky addresses. Spends 1 credit."
+    },
+    {
+      "name": "ip_lookup",
+      "description": "Look up an IP address: geolocation, connection type, and proxy/VPN/Tor/datacenter flags with a fraud/risk score. Spends 1 credit."
+    },
+    {
+      "name": "bulk_verify",
+      "description": "Validate up to 50 phones, emails, or IPs in one call. Returns a per-item result array. Spends 1 credit per item."
+    },
+    {
+      "name": "get_account",
+      "description": "Get the 1Lookup organization's plan and remaining credits. Free, spends no credits."
+    }
+  ],
+  "notes": "Requires a paid 1Lookup plan; free-plan accounts receive HTTP 403 UPGRADE_REQUIRED. Tool calls draw on the same universal credits as the REST API with no separate MCP fee. Transport is streamable HTTP; SSE is disabled."
+}

@@ -1,4 +1,4 @@
-generated: '2026-08-09'
+generated: '2026-08-14'
 method: searched
 source: >-
   https://app.1lookup.io/api, https://www.1lookup.io/security,
@@ -16,7 +16,11 @@ standards:
       /api-docs return 404.
   - id: asyncapi
     conforms: false
-    evidence: No event/streaming surface published; bulk work is job-and-poll, not evented.
+    evidence: >-
+      An outbound webhook surface exists as of 2026-08-14 (bulk-job completion and job-change monitor
+      callbacks, HMAC-SHA256 signed) but no AsyncAPI document describes it. /asyncapi.yaml and
+      /asyncapi.json on app.1lookup.io answer 200 with the Next.js HTML shell (soft-404).
+    source: asyncapi/1lookup-webhooks.yml
   - id: graphql
     conforms: false
     evidence: No /graphql endpoint documented or discovered.
@@ -64,7 +68,11 @@ standards:
     evidence: No /.well-known/api-catalog document.
   - id: rfc8594-sunset-header
     conforms: false
-    evidence: No deprecation policy or Sunset header contract documented.
+    evidence: >-
+      No deprecation policy or Sunset header contract. A versioning policy IS now published (additive
+      changes ship continuously in v1; breaking changes get a new version path), but it says nothing
+      about retiring anything.
+    source: lifecycle/1lookup-lifecycle.yml
   - id: llms-txt
     conforms: true
     evidence: 'https://www.1lookup.io/llms.txt (13KB structured index) and llms-full.txt both published.'
@@ -73,11 +81,37 @@ standards:
     conforms: false
     evidence: 'No agent card at /.well-known/agent-card.json or /.well-known/agent.json on any host.'
   - id: idempotency
-    conforms: false
-    evidence: No idempotency key or replay contract documented.
+    conforms: partial
+    evidence: >-
+      CHANGED since 2026-08-09. The reference now documents an Idempotency-Key header on bulk-job
+      creation, a 24-hour key retention window, an Idempotent-Replay: true marker on a replayed
+      response, and a 409 IDEMPOTENCY_CONFLICT code for an in-flight duplicate. It covers ONLY
+      POST /api/v1/bulk/jobs — the other ~42 credit-consuming single-lookup operations have no
+      idempotency contract, so this is partial conformance, not full.
+    source: conventions/1lookup-conventions.yml
   - id: rate-limit-headers
     conforms: true
-    evidence: 'X-RateLimit-Limit / -Remaining / -Reset returned on every response (de-facto convention, not RFC 9861 RateLimit fields).'
+    evidence: >-
+      X-RateLimit-Limit / -Remaining / -Reset returned on every response, plus Retry-After (in seconds)
+      on a 429 as of 2026-08-14 — the previous capture recorded Retry-After as absent. De-facto
+      convention, not the RFC 9861 RateLimit fields.
+  - id: webhook-hmac-signing
+    conforms: true
+    evidence: >-
+      Deliveries carry X-1Lookup-Signature: sha256=<hex>, an HMAC-SHA256 of the raw body keyed with a
+      per-monitor whsec_ secret, with constant-time comparison documented. No timestamp/nonce, so no
+      replay window is enforced by the scheme itself.
+    source: asyncapi/1lookup-webhooks.yml
+  - id: mcp-server-card
+    conforms: true
+    evidence: >-
+      https://www.1lookup.io/.well-known/mcp/server-card.json returns application/json with serverInfo,
+      transport, authentication and the five tools. A vendor discovery document at a well-known path,
+      not an RFC-registered one.
+    source: well-known/1lookup-mcp-server-card.json
+  - id: request-id-correlation
+    conforms: true
+    evidence: 'X-Request-Id on every response, echoed as data.request.id on successful lookups.'
 compliance:
   published: true
   page: https://www.1lookup.io/security
@@ -99,5 +133,11 @@ x-evidence:
     fetched: '2026-08-09'
   - url: https://app.1lookup.io/openapi.json
     http_status: 200
-    fetched: '2026-08-09'
+    fetched: '2026-08-14'
     note: 200 but text/html Next.js shell — soft-404, not a spec
+  - url: https://www.1lookup.io/.well-known/mcp/server-card.json
+    http_status: 200
+    fetched: '2026-08-14'
+  - url: https://app.1lookup.io/api
+    http_status: 200
+    fetched: '2026-08-14'

@@ -1,4 +1,4 @@
-generated: '2026-08-09'
+generated: '2026-08-14'
 method: generated
 source: https://app.1lookup.io/api + https://www.1lookup.io/products/mcp + repo artifacts
 note: >-
@@ -22,3 +22,12 @@ skills:
     api: https://app.1lookup.io/api/v1
     operations: ['POST /api/v1/company-firmographics', 'POST /api/v1/prospect-search', 'POST /api/v1/b2b-contact-append', 'POST /api/v1/account-search', 'GET /api/v1/account']
     mcp_tools: []
+  - file: 1lookup-run-a-safe-bulk-job.md
+    name: Run a bulk validation job safely, with idempotent retries and a signed callback
+    api: https://app.1lookup.io/api/v1
+    operations: ['POST /api/v1/bulk/jobs', 'GET /api/v1/bulk/jobs/{job_id}', 'GET /api/v1/bulk/jobs/{job_id}/results', 'GET /api/v1/account']
+    mcp_tools: []
+    added: '2026-08-14'
+    note: >-
+      Grounded in the Idempotency-Key, webhook-signature and error-code contracts the provider
+      published between 2026-08-09 and 2026-08-14; none of them existed at the previous pass.

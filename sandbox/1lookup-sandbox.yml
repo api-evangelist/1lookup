@@ -1,4 +1,4 @@
-generated: '2026-08-09'
+generated: '2026-08-14'
 method: searched
 source: https://app.1lookup.io/api, https://www.1lookup.io/tools, https://www.1lookup.io/pricing
 description: >-
@@ -10,7 +10,7 @@ description: >-
 api_test_mode:
   present: false
   test_keys: false
-  key_prefixes: none published
+  key_prefixes: 'sk_live_ only — there is no sk_test_ counterpart, and the docs never mention one'
   sandbox_host: none
   magic_test_values: none published
   test_clock: false
@@ -42,14 +42,28 @@ cost_control_for_testing:
   - Identical lookups are cached for 7 days, so re-running the same test input does not re-bill.
   - '`bypass_cache: true` in a single-lookup body forces a fresh (billable) lookup.'
   - Many enrichment products are only charged on a match, so no-match test inputs are free.
+  - 'A 4xx validation error costs nothing, so malformed-input tests are free (documented 2026-08-14).'
+  - >-
+    Bulk jobs are credit-checked for the whole job up front and refused with 402 rather than half
+    running, so a mis-sized test job cannot half-drain a balance.
+  - >-
+    NEW 2026-08-14 — an Idempotency-Key on POST /api/v1/bulk/jobs makes a retried job creation safe for
+    24 hours; it is the closest thing 1Lookup publishes to a re-runnable test affordance.
 gaps:
   - No test-mode credentials or sandbox environment.
   - No published magic/reserved test identifiers to exercise error and edge-case branches.
   - No way to simulate a 402 (insufficient credits) or 429 (rate limited) response deterministically.
+  - >-
+    The error catalog grew to thirteen codes on 2026-08-14 with no way to trigger most of them on
+    purpose — an integration cannot exercise 403 UPGRADE_REQUIRED, 409 IDEMPOTENCY_CONFLICT or
+    503 SERVICE_UNAVAILABLE without waiting for the real condition.
+  - >-
+    Webhooks have no test-delivery or replay tool, so signature verification can only be exercised by
+    running a real bulk job or monitor against a public HTTPS endpoint.
 x-evidence:
   - url: https://www.1lookup.io/pricing
     http_status: 200
     fetched: '2026-08-09'
   - url: https://app.1lookup.io/api
     http_status: 200
-    fetched: '2026-08-09'
+    fetched: '2026-08-14'

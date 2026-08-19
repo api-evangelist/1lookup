@@ -1,4 +1,4 @@
-generated: '2026-08-09'
+generated: '2026-08-14'
 method: searched
 source: npm registry search, PyPI, GitHub search, https://app.1lookup.io/api, https://www.1lookup.io/integrations
 description: >-
@@ -13,6 +13,7 @@ packages:
     registry: npm
     name: '@momentum-labs/n8n-nodes-1lookup'
     version: 1.0.1
+    published: '2026-05-08'
     license: MIT
     url: https://www.npmjs.com/package/@momentum-labs/n8n-nodes-1lookup
     install: npm install @momentum-labs/n8n-nodes-1lookup
@@ -24,9 +25,13 @@ packages:
       Ambiguous provenance — published under the @momentum-labs npm scope and hosted in the GroupX-ai
       GitHub org, but the package author metadata reads "1Lookup <support@1lookup.io>" and the homepage
       is 1lookup.io. Not claimed as first-party on any 1Lookup page, so recorded official: false.
+    currency_note: >-
+      Only two versions ever published (1.0.0, 1.0.1); latest 1.0.1 dated 2026-05-08 from
+      registry.npmjs.org metadata. It predates the 2026-08 API rewrite that added idempotency,
+      webhooks, the error registry and two new products, so the node cannot cover them.
 registries_checked:
-  - {registry: npm, query: '1lookup', first_party_hits: 0}
-  - {registry: pypi, query: '1lookup / onelookup / lookup1', status: 404, first_party_hits: 0}
+  - {registry: npm, query: '1lookup', first_party_hits: 0, rechecked: '2026-08-14'}
+  - {registry: pypi, query: '1lookup / onelookup / lookup1', status: 404, first_party_hits: 0, rechecked: '2026-08-14'}
   - {registry: maven-central, first_party_hits: 0}
   - {registry: nuget, first_party_hits: 0}
   - {registry: pkg.go.dev, first_party_hits: 0}
@@ -34,9 +39,16 @@ registries_checked:
   - {registry: packagist, first_party_hits: 0}
   - {registry: crates.io, first_party_hits: 0}
 code_examples_published:
-  - {language: javascript, style: axios snippet, url: 'https://app.1lookup.io/api'}
-  - {language: python, style: requests class snippet, url: 'https://app.1lookup.io/api'}
-  - {language: bash, style: curl script, url: 'https://app.1lookup.io/api'}
+  note: >-
+    Updated 2026-08-14 — the rewritten reference now prints every one of its 46 endpoints in five
+    languages instead of three. Still snippets, still not libraries.
+  see: examples/1lookup-examples.yml
+  languages:
+    - {language: bash, style: curl, url: 'https://app.1lookup.io/api'}
+    - {language: javascript, style: 'fetch / node:crypto snippets', url: 'https://app.1lookup.io/api'}
+    - {language: python, style: requests snippets, url: 'https://app.1lookup.io/api'}
+    - {language: php, style: per-endpoint snippet tab, url: 'https://app.1lookup.io/api'}
+    - {language: go, style: per-endpoint snippet tab, url: 'https://app.1lookup.io/api'}
 integration_platforms:
   note: >-
     1Lookup markets a large integration library (100+ listings at https://www.1lookup.io/integrations)
@@ -53,6 +65,17 @@ third_party_collections:
     note: >-
       Public Postman workspace published 2026-07-27 by "Awais Ahmad's Team", not by 1Lookup, and not
       linked from any 1Lookup page. Not treated as a provider-published Postman surface.
+source_control:
+  github_account: https://github.com/1Lookup
+  first_party: true
+  evidence: >-
+    The GitHub profile links to https://www.1lookup.io/ and https://x.com/1lookupapp, so the account
+    belongs to the company.
+  contents: >-
+    A profile repo plus forks of free-for-dev and public-apis. NO first-party code, no SDK, no
+    examples repo, and it is not linked from 1lookup.io or the API reference. Recorded as a finding,
+    NOT wired as a GitHubOrganization pointer — there is no developer code presence to point at.
+  probed: '2026-08-14'
 gaps:
   - No first-party SDK in any language.
   - No first-party CLI.
@@ -66,4 +89,11 @@ x-evidence:
     fetched: '2026-08-09'
   - url: https://app.1lookup.io/api
     http_status: 200
-    fetched: '2026-08-09'
+    fetched: '2026-08-14'
+  - url: https://registry.npmjs.org/@momentum-labs/n8n-nodes-1lookup
+    http_status: 200
+    fetched: '2026-08-14'
+    note: 'dist-tags.latest = 1.0.1, time["1.0.1"] = 2026-05-08T08:09:14.773Z'
+  - url: https://github.com/1Lookup
+    http_status: 200
+    fetched: '2026-08-14'

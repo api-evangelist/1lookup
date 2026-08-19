@@ -1,0 +1,227 @@
+generated: '2026-08-14'
+method: searched
+source: https://app.1lookup.io/api
+docs: https://app.1lookup.io/api
+description: >-
+  Entity model for the 1Lookup REST API, transcribed from the published reference. 1Lookup publishes NO
+  OpenAPI, so nothing here was derived from a spec — every entity, field and relationship below appears
+  verbatim in the provider's own reference (the "Requests and responses" envelope section, the credits,
+  caching, bulk-jobs, monitoring and account endpoint pages) or in one of its printed example payloads.
+  Fields the docs do not publish are recorded as unpublished rather than inferred.
+shape: >-
+  1Lookup is not a CRUD API with long-lived resources. Forty-two of its forty-six operations are
+  stateless single-shot lookups that create no server-side object: you POST an input, you get one
+  envelope back, and the only persistence is a 7-day result cache keyed on product + exact input. Only
+  four resource families actually have identity and lifecycle — BulkJob, JobChangeMonitor, Account and
+  the ApiKey. The entity graph therefore has an envelope core and a small stateful periphery, which is
+  the opposite shape from most catalog entries and is the single most useful thing to know before
+  integrating.
+identifiers:
+  - {entity: RequestEnvelope, field: data.request.id, form: UUID, also_returned_as: 'X-Request-Id response header'}
+  - {entity: BulkJob, field: job_id, form: UUID, example: '235ecda1-9e98-46f1-9cdf-4d410e937e38'}
+  - {entity: BulkJobLookup, field: id, form: UUID, example: '3f1c9a20-6b6e-4f57-9f0a-1d2c3b4a5e6f'}
+  - {entity: JobChangeMonitor, field: id, form: prefixed string, prefix: 'cmon_', example: 'cmon_8f2a1c'}
+  - {entity: WebhookSecret, field: webhook_secret, form: prefixed string, prefix: 'whsec_'}
+  - {entity: ApiKey, field: (the key itself), form: prefixed secret, prefix: 'sk_live_'}
+  - {entity: IdempotencyKey, field: 'Idempotency-Key header', form: client-supplied UUID, retention: 24 hours}
+entities:
+  - name: RequestEnvelope
+    kind: response envelope
+    description: >-
+      The single response shape every product returns. success plus a data object holding up to six
+      sections; request, metadata and classification are present on every product, the other three
+      appear where the product has something to say.
+    fields:
+      - {name: success, type: boolean, always: true}
+      - {name: data, type: object, always: true}
+    sections: [Request, Metadata, Classification, RiskAssessment, Insights, Recommendations]
+  - name: Request
+    kind: envelope section
+    path: data.request
+    always_present: true
+    fields:
+      - {name: id, type: string, description: Request UUID, mirrors: X-Request-Id}
+      - {name: type, type: string, description: The product that ran, e.g. phone}
+      - {name: input, type: string, description: The value that was looked up}
+      - {name: timestamp, type: string, format: date-time}
+      - {name: processing_time_ms, type: integer}
+  - name: Metadata
+    kind: envelope section
+    path: data.metadata
+    always_present: true
+    description: What the call cost and where the data came from.
+    fields:
+      - {name: api_version, type: string, example: '1.0'}
+      - {name: schema_version, type: string, example: '1.0'}
+      - {name: credits_used, type: integer}
+      - {name: credits_remaining, type: integer}
+      - {name: cache_hit, type: boolean}
+      - {name: data_sources, type: 'string[]', example: '[carrier_lookup, fcc_daily_data]'}
+  - name: Classification
+    kind: envelope section
+    path: data.classification
+    always_present: true
+    description: >-
+      The product's own verdict and the field most integrations branch on. Shape is per-product —
+      line_type/number_status for phone, deliverability_status for email, matched for enrichment,
+      an authority score for domain products.
+    published_values:
+      line_type: [MOBILE, LANDLINE, VOIP]
+      number_status: [ACTIVE, DISCONNECTED]
+      deliverability_status: [DELIVERABLE, RISKY]
+    note: The docs name these values in prose and examples; they do not publish a closed enum list.
+  - name: RiskAssessment
+    kind: envelope section
+    path: data.risk_assessment
+    always_present: false
+    fields:
+      - {name: fraud_score, type: integer, range: 0-100}
+      - {name: risk_level, type: string, enum: [LOW, MEDIUM, HIGH, CRITICAL]}
+      - {name: risk_factors, type: 'string[]'}
+      - {name: confidence_level, type: integer}
+  - name: Insights
+    kind: envelope section
+    path: data.insights
+    always_present: false
+    description: >-
+      The detail behind the verdict — carrier, location, deliverability factors, company profile,
+      transcript text. Shape varies by product and is not published as a schema.
+  - name: Recommendations
+    kind: envelope section
+    path: data.recommendations
+    always_present: false
+    fields:
+      - {name: primary_action, type: string, enum: [APPROVE, VERIFY, REVIEW, BLOCK]}
+      - {name: secondary_actions, type: 'string[]', example: '[SEND_SMS_OTP]'}
+      - {name: user_message, type: string, description: Customer-safe message}
+  - name: ErrorEnvelope
+    kind: response envelope
+    description: The one error shape every endpoint returns.
+    fields:
+      - {name: success, type: boolean, always: false}
+      - {name: error.message, type: string, audience: human}
+      - {name: error.code, type: string, audience: machine, stability: stable}
+      - {name: error.type, type: string, example: api_error}
+    see: errors/1lookup-problem-types.yml
+  - name: BulkJob
+    kind: resource
+    identity: job_id
+    created_by: 'POST /api/v1/bulk/jobs'
+    read_by: 'GET /api/v1/bulk/jobs/{job_id}'
+    fields:
+      - {name: job_id, type: string}
+      - {name: type, type: string, description: One of 21 published bulk job types}
+      - {name: status, type: string, enum: [processing, completed]}
+      - {name: accepted, type: integer, description: Rows accepted at create}
+      - {name: row_count, type: integer}
+      - {name: processed_count, type: integer}
+      - {name: successful_count, type: integer}
+      - {name: failed_count, type: integer}
+      - {name: results_url, type: string, nullable: true, description: Signed CSV link, expires 1 hour after issue}
+      - {name: webhook_url, type: string, nullable: true}
+    constraints:
+      max_rows: 100000
+      credit_preflight: Whole job priced before start; refused with 402 if the balance cannot cover it.
+      idempotency: 'Idempotency-Key header; replay returns the original job with Idempotent-Replay: true'
+  - name: BulkJobLookup
+    kind: sub-resource
+    identity: id
+    read_by: 'GET /api/v1/bulk/jobs/{job_id}/results'
+    fields:
+      - {name: id, type: string}
+      - {name: input, type: string}
+      - {name: status, type: string, enum: [completed]}
+      - {name: tokens_consumed, type: integer}
+      - {name: response_data, type: object, description: The product envelope's data for that row}
+  - name: Pagination
+    kind: response section
+    path: data.pagination
+    appears_on: 'GET /api/v1/bulk/jobs/{job_id}/results'
+    fields:
+      - {name: limit, type: integer, default: 100, maximum: 1000}
+      - {name: offset, type: integer, default: 0}
+      - {name: returned, type: integer}
+      - {name: has_more, type: boolean}
+  - name: JobChangeMonitor
+    kind: resource
+    identity: id
+    id_prefix: cmon_
+    created_by: 'POST /api/v1/job-change-monitors'
+    listed_by: 'GET /api/v1/job-change-monitors'
+    fields:
+      - {name: id, type: string}
+      - {name: name, type: string, required: true}
+      - {name: frequency, type: string, example: weekly}
+      - {name: alert_email, type: boolean, default: true}
+      - {name: webhook_url, type: string, nullable: true}
+      - {name: active, type: boolean}
+      - {name: created_at, type: string, format: date-time}
+    on_create_only:
+      - {name: webhook_secret, type: string, prefix: 'whsec_', note: Returned once; never shown again}
+  - name: MonitorContact
+    kind: sub-resource
+    created_by: 'POST /api/v1/job-change-monitors/{id}/contacts'
+    fields:
+      - {name: profile_url, type: string, example: 'https://www.linkedin.com/in/jane-doe'}
+      - {name: label, type: string}
+    billing: 5 credits per contact per weekly recheck; unreachable profiles are not charged.
+  - name: MonitorEvent
+    kind: sub-resource
+    read_by: 'GET /api/v1/job-change-monitors/{id}/events'
+    query_params: [page, limit]
+    description: A detected change, naming the old and new roles. Field names are not published.
+    also_delivered_by: webhook (see asyncapi/1lookup-webhooks.yml)
+  - name: Account
+    kind: resource
+    read_by: 'GET /api/v1/account'
+    fields:
+      - {name: organization.name, type: string}
+      - {name: organization.active, type: boolean}
+      - {name: subscription.status, type: string, example: active}
+      - {name: subscription.plan.name, type: string, example: Pro Plan}
+      - {name: tokens.total_available, type: integer, description: Live universal credit balance}
+      - {name: usage.current_period.lookups, type: integer}
+    note: >-
+      The reference's expanded response also covers period and all-time usage and the calling key's own
+      totals; only the abbreviated example above is printed in full, so deeper fields are unpublished.
+  - name: ApiKey
+    kind: credential
+    prefix: sk_live_
+    scope: organization (not per person); carries the organization's full credit balance
+    plurality: Several keys may be held at once so rotation is create-deploy-delete.
+    rate_limit_scope: Lookup rate limits are applied per key; account/monitoring limits per organization.
+    see: authentication/1lookup-authentication.yml
+relationships:
+  - {from: BulkJob, to: BulkJobLookup, type: has_many, via: job_id}
+  - {from: BulkJob, to: Pagination, type: has_one, via: results response}
+  - {from: BulkJob, to: RequestEnvelope, type: has_many, via: 'BulkJobLookup.response_data (one envelope per row)'}
+  - {from: BulkJob, to: WebhookDelivery, type: has_one, via: webhook_url}
+  - {from: JobChangeMonitor, to: MonitorContact, type: has_many, via: 'monitor id path segment'}
+  - {from: JobChangeMonitor, to: MonitorEvent, type: has_many, via: 'monitor id path segment'}
+  - {from: JobChangeMonitor, to: WebhookDelivery, type: has_many, via: webhook_url}
+  - {from: RequestEnvelope, to: Request, type: has_one, via: data.request}
+  - {from: RequestEnvelope, to: Metadata, type: has_one, via: data.metadata}
+  - {from: RequestEnvelope, to: Classification, type: has_one, via: data.classification}
+  - {from: RequestEnvelope, to: RiskAssessment, type: has_one, via: data.risk_assessment}
+  - {from: RequestEnvelope, to: Insights, type: has_one, via: data.insights}
+  - {from: RequestEnvelope, to: Recommendations, type: has_one, via: data.recommendations}
+  - {from: Account, to: ApiKey, type: has_many, via: organization}
+  - {from: ApiKey, to: BulkJob, type: has_many, via: 'Authorization bearer'}
+  - {from: ApiKey, to: JobChangeMonitor, type: has_many, via: 'Authorization bearer'}
+cross_cutting:
+  global_request_field: 'bypass_cache (boolean) on every single-lookup POST body'
+  cache: 7-day cache keyed on product + exact input; a hit returns cache_hit true and costs 0 credits.
+  see:
+    - conventions/1lookup-conventions.yml
+    - errors/1lookup-problem-types.yml
+    - rate-limits/1lookup-rate-limits.yml
+    - asyncapi/1lookup-webhooks.yml
+gaps:
+  - No OpenAPI/JSON Schema, so none of these shapes are machine-readable or validatable.
+  - insights is explicitly variable-shape and is not documented per product.
+  - Enum values are named in prose and examples only; no closed enumerations are published.
+  - Monitor event payload fields and the bulk-job callback body are not published at all.
+x-evidence:
+  - url: https://app.1lookup.io/api
+    http_status: 200
+    fetched: '2026-08-14'

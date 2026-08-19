@@ -1,13 +1,15 @@
-generated: '2026-08-09'
+generated: '2026-08-14'
 method: searched
 source: https://app.1lookup.io/api
+docs: https://app.1lookup.io/api
 format: vendor-json
 rfc9457: false
 description: >-
-  1Lookup returns a consistent vendor JSON error envelope rather than RFC 9457 problem+json. The
-  reference publishes the envelope shape, one worked example code, and the five HTTP status codes the
-  API uses. It does NOT publish a full error-code registry — the `codes` list below contains only the
-  code documented verbatim; it is not a complete catalog and must not be treated as one.
+  1Lookup returns a consistent vendor JSON error envelope rather than RFC 9457 problem+json. MATERIAL
+  CHANGE since 2026-08-09: the reference now publishes a COMPLETE error-code registry — thirteen codes
+  with their HTTP status and meaning, a stated stability contract (branch on error.code, never on
+  error.message), and an explicit retry policy. The previous capture recorded a single documented code
+  and named the absence of a registry as a gap; that gap is closed.
 envelope:
   content_type: application/json
   example: |
@@ -25,46 +27,55 @@ envelope:
       description: Always false on an error response.
     - name: error.message
       type: string
-      description: Human-readable description of what failed.
+      description: >-
+        Human-readable. Explicitly NOT stable — the docs say messages "are written for humans and get
+        clearer over time", so consumers must not branch on them.
     - name: error.code
       type: string
-      description: Machine-readable error code.
+      description: Machine-readable and documented as stable. This is the field to branch on.
     - name: error.type
       type: string
       description: Error class (documented example value is api_error).
-problems:
-  - status: 400
-    title: Bad Request
-    description: The request was malformed or an input failed validation.
-    remediation: Read error.error.message and correct the offending field before retrying.
-  - status: 401
-    title: Unauthorized
-    description: Missing or invalid API key in the Authorization header.
-    remediation: Check the Bearer token; rotate the key from the dashboard if compromised.
-  - status: 402
-    title: Insufficient Credits
-    description: The organization's universal credit balance cannot cover the requested lookup.
-    remediation: 'Top up or upgrade the plan; call GET /api/v1/account first to pace a large run.'
-  - status: 429
-    title: Rate Limited
-    description: More than 1,000 requests in a minute for the organization.
-    remediation: Back off exponentially and honor X-RateLimit-Reset.
-  - status: 500
-    title: Server Error
-    description: Unexpected server-side failure.
-    remediation: Retry with backoff; contact support if persistent.
+retry_policy:
+  retryable: [429, 500, 503]
+  also_retryable_in_sample_code: [502, 504]
+  not_retryable: Every 4xx below 429 — the request will fail again in exactly the same way until it changes.
+  backoff: Honour Retry-After first, then exponential backoff.
+  quote: '429, 500 and 503 are worth retrying with backoff.'
 codes:
-  - code: INVALID_INPUT
-    type: api_error
-    status: 400
-    message_example: Invalid email format
-    source: https://app.1lookup.io/api
+  - {code: INVALID_REQUEST, status: 400, type: api_error, meaning: 'The body was not valid JSON, or a field was the wrong type.', retryable: false}
+  - {code: INVALID_INPUT, status: 400, type: api_error, meaning: 'The value was well formed but not usable — an unparseable number, a bad URL.', message_example: Invalid email format, retryable: false}
+  - {code: MISSING_FIELD, status: 400, type: api_error, meaning: A required parameter was absent., retryable: false}
+  - {code: INVALID_TYPE, status: 400, type: api_error, meaning: A bulk job asked for a product that has no bulk path., retryable: false}
+  - {code: INPUT_LIMIT_EXCEEDED, status: 400, type: api_error, meaning: A bulk job carried more than 100,000 rows., retryable: false}
+  - {code: UNAUTHORIZED, status: 401, type: api_error, meaning: 'The key is missing, malformed, revoked or expired.', message_example: Invalid or missing API key, retryable: false}
+  - {code: INSUFFICIENT_CREDITS, status: 402, type: api_error, meaning: The balance cannot cover the call. Nothing was charged., message_example: Insufficient credits, retryable: false}
+  - {code: UPGRADE_REQUIRED, status: 403, type: api_error, meaning: 'The organization has no paid plan, so API access is closed.', retryable: false, note: 'Also returned on every MCP tool call from a free-plan account.'}
+  - {code: NOT_FOUND, status: 404, type: api_error, meaning: 'The job, monitor or product in the path does not exist for this organization.', retryable: false}
+  - {code: IDEMPOTENCY_CONFLICT, status: 409, type: api_error, meaning: A request with the same Idempotency-Key is still in flight. Retry shortly., retryable: true, note: 'Retry-shortly is documented, but no Retry-After is specified for this code.'}
+  - {code: RATE_LIMIT_EXCEEDED, status: 429, type: api_error, meaning: A rate limit tripped. Read Retry-After., retryable: true}
+  - {code: INTERNAL_ERROR, status: 500, type: api_error, meaning: Something failed on our side. Safe to retry with backoff., retryable: true}
+  - {code: SERVICE_UNAVAILABLE, status: 503, type: api_error, meaning: An upstream source is degraded and a circuit breaker opened. Retry-After is set., retryable: true}
+problems:
+  - {status: 400, title: Bad Request, codes: [INVALID_REQUEST, INVALID_INPUT, MISSING_FIELD, INVALID_TYPE, INPUT_LIMIT_EXCEEDED], remediation: 'Read error.code and correct the offending field or body before retrying.'}
+  - {status: 401, title: Unauthorized, codes: [UNAUTHORIZED], remediation: 'Check the Bearer key; rotate from the dashboard if compromised.'}
+  - {status: 402, title: Insufficient Credits, codes: [INSUFFICIENT_CREDITS], remediation: 'Top up or upgrade; call GET /api/v1/account first to pace a large run.'}
+  - {status: 403, title: Upgrade Required, codes: [UPGRADE_REQUIRED], remediation: 'Move the organization onto a paid plan — API and MCP access are paid features.'}
+  - {status: 404, title: Not Found, codes: [NOT_FOUND], remediation: 'Check the job/monitor id and that it belongs to this organization.'}
+  - {status: 409, title: Idempotency Conflict, codes: [IDEMPOTENCY_CONFLICT], remediation: 'Wait and retry the same Idempotency-Key; do not mint a new one or you will pay twice.'}
+  - {status: 429, title: Rate Limited, codes: [RATE_LIMIT_EXCEEDED], remediation: 'Read Retry-After, then exponential backoff. See rate-limits/1lookup-rate-limits.yml.'}
+  - {status: 500, title: Internal Error, codes: [INTERNAL_ERROR], remediation: Retry with backoff; quote X-Request-Id to support if persistent.}
+  - {status: 503, title: Service Unavailable, codes: [SERVICE_UNAVAILABLE], remediation: 'Upstream circuit breaker; honour Retry-After.'}
+support:
+  contact: support@1lookup.io
+  quote_this: 'X-Request-Id from the failing call (also at data.request.id on successes).'
 gaps:
-  - No published error-code registry — only INVALID_INPUT appears in the reference.
   - No RFC 9457 application/problem+json representation.
   - No `type` URI per problem, so errors are not dereferenceable.
-  - No documented retry-after header on 429 (only X-RateLimit-Reset).
+  - No machine-readable error registry — the catalog is an HTML table, not a document.
+  - No per-code Retry-After guidance for 409 IDEMPOTENCY_CONFLICT.
 x-evidence:
   - url: https://app.1lookup.io/api
     http_status: 200
-    fetched: '2026-08-09'
+    fetched: '2026-08-14'
+    note: '"Errors" core-concept section, thirteen-row code table.'

@@ -1,0 +1,116 @@
+generated: '2026-08-14'
+method: searched
+source: https://app.1lookup.io/api
+docs: https://app.1lookup.io/api
+spec_type: none
+description: >-
+  1Lookup ships an outbound webhook surface — new since the 2026-08-09 pass, which correctly recorded
+  "no event surface" against the reference as it stood then. The rewritten reference now documents a
+  dedicated "Webhooks" core-concept section plus a `webhook_url` parameter on two resources: bulk jobs
+  (one call when the job finishes) and job-change monitors (one call per detected change). Deliveries
+  are HMAC-SHA256 signed with a per-monitor secret. There is NO AsyncAPI document, no event catalog,
+  no SSE/WebSocket stream and no subscription-management API — the whole surface is the two
+  `webhook_url` fields below, so this file is the webhook catalog, not a spec harvest.
+publishes_asyncapi: false
+asyncapi_probed:
+  - {url: 'https://app.1lookup.io/asyncapi.yaml', status: 200, content_type: text/html, parsed: false, note: 'Next.js catch-all HTML shell — soft-404, not a spec'}
+  - {url: 'https://app.1lookup.io/asyncapi.json', status: 200, content_type: text/html, parsed: false, note: 'Next.js catch-all HTML shell — soft-404, not a spec'}
+  - {url: 'https://www.1lookup.io/asyncapi.yaml', status: 404}
+transport:
+  style: outbound HTTP POST callback
+  content_type: application/json
+  tls_required: true
+  note: >-
+    The registered URL must be HTTPS and publicly resolvable; private and loopback addresses are
+    rejected at registration.
+registration:
+  model: per-resource parameter (no webhook-management API)
+  endpoints:
+    - operation: 'POST /api/v1/bulk/jobs'
+      parameter: webhook_url
+      required: false
+      description: HTTPS endpoint called once when the bulk job finishes.
+    - operation: 'POST /api/v1/job-change-monitors'
+      parameter: webhook_url
+      required: false
+      description: HTTPS endpoint for job-change events on the monitored contacts.
+  secret:
+    field: webhook_secret
+    prefix: whsec_
+    returned: >-
+      Once only, in the response that created the monitor. Never shown again — store it at create time.
+    note: >-
+      The reference documents the secret as returned on monitor create. Bulk-job callbacks are stated to
+      be "signed with the same scheme as monitor webhooks"; the docs do not say which secret keys a
+      bulk-job delivery, and that is recorded here as a published gap rather than guessed.
+signing:
+  algorithm: HMAC-SHA256
+  header: X-1Lookup-Signature
+  format: 'sha256=<hex digest>'
+  signed_payload: the raw request body
+  comparison: constant-time (docs supply a timingSafeEqual example)
+  example_header: 'X-1Lookup-Signature: sha256=9f86d081884c7d65…'
+delivery:
+  attempts: 1
+  retries: none
+  timeout_seconds: 5
+  redirects_followed: false
+  expected_response: 2xx, returned quickly; do the work asynchronously
+  ordering: not documented
+  replay_protection: no timestamp/nonce documented beyond the body HMAC
+  guidance: >-
+    The provider states plainly that "a webhook is a hint, not the record": because delivery is
+    single-attempt, a consumer should treat the callback as a prompt to GET the job or the monitor's
+    events rather than as the system of record.
+events:
+  - name: bulk.job.finished
+    published_name: null
+    source_operation: 'POST /api/v1/bulk/jobs'
+    trigger: The bulk job reaches a terminal status.
+    delivery: One POST to the job's registered webhook_url.
+    follow_up: 'GET /api/v1/bulk/jobs/{job_id} — read status, counters and a fresh signed results_url.'
+    note: >-
+      The reference does not publish an event name or the callback body schema; only the trigger and the
+      signing scheme are documented. Recorded as documented, not modelled.
+  - name: monitor.job_change.detected
+    published_name: null
+    source_operation: 'POST /api/v1/job-change-monitors'
+    trigger: A weekly recheck finds a monitored contact has changed role or company.
+    delivery: One signed POST per detected change to the monitor's webhook_url.
+    follow_up: 'GET /api/v1/job-change-monitors/{id}/events?page=&limit= — the authoritative event list.'
+    payload_note: >-
+      The docs say the event "names the old and new roles"; the exact field names are not published.
+    email_alternative: 'alert_email (boolean, default true) sends the same change alert by email.'
+polling_alternative:
+  bulk_jobs: 'GET /api/v1/bulk/jobs/{job_id} and /results — free, and excluded from the lookup rate budget.'
+  monitors: 'GET /api/v1/job-change-monitors/{id}/events with page and limit.'
+verification_example:
+  language: javascript
+  source: https://app.1lookup.io/api
+  code: |
+    import crypto from "node:crypto";
+
+    // Verify against the RAW body — parse only after the check passes.
+    export function isFrom1Lookup(rawBody, header, secret) {
+      const received = String(header ?? "").replace(/^sha256=/, "");
+      const expected = crypto
+        .createHmac("sha256", secret)
+        .update(rawBody)
+        .digest("hex");
+      const a = Buffer.from(received, "hex");
+      const b = Buffer.from(expected, "hex");
+      return a.length === b.length && crypto.timingSafeEqual(a, b);
+    }
+gaps:
+  - No AsyncAPI document, so the event surface is not machine-readable.
+  - No published event names, versions, or callback body schemas.
+  - No webhook-management API — endpoints are set per job/monitor and cannot be listed or rotated.
+  - Single-attempt delivery with no retry, no dead-letter and no delivery log.
+  - No timestamp in the signature scheme, so replay windows must be enforced by the consumer.
+x-evidence:
+  - url: https://app.1lookup.io/api
+    http_status: 200
+    fetched: '2026-08-14'
+    note: >-
+      "Webhooks" core-concept section, plus webhook_url/webhook_secret parameters on the bulk-job and
+      job-change-monitor endpoints.
