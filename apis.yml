@@ -16,6 +16,17 @@ created: '2026-08-08'
 modified: '2026-08-14'
 specificationVersion: '0.23'
 tags:
+  - Phone Validation
+  - Email Validation
+  - IP Intelligence
+  - Fraud and Risk
+  - Data Enrichment
+  - B2B contact & company data
+  - SEO / web analytics
+  - Audio Transcription
+  - MCP / agent-native
+  - REST API
+tags_raw:
   - phone validation
   - email validation
   - IP intelligence
@@ -38,6 +49,16 @@ apis:
     humanURL: https://app.1lookup.io/api
     baseURL: https://app.1lookup.io/api/v1
     tags:
+      - Phone Validation
+      - Email Validation
+      - IP Intelligence
+      - Fraud and Risk
+      - Data Enrichment
+      - B2B contact & company data
+      - SEO / web analytics
+      - Audio Transcription
+      - REST API
+    tags_raw:
       - phone validation
       - email validation
       - IP intelligence
@@ -81,6 +102,11 @@ apis:
     humanURL: https://www.1lookup.io/products/mcp
     baseURL: https://app.1lookup.io/api/mcp
     tags:
+      - MCP / agent-native
+      - Phone Validation
+      - Email Validation
+      - IP Intelligence
+    tags_raw:
       - MCP / agent-native
       - phone validation
       - email validation
