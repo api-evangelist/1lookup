@@ -10,6 +10,17 @@ description: >-
   media lookups, property data and audio transcription. The same engine powers a web dashboard with batch
   CSV validation, roughly twenty-five free rate-limited browser tools, and a first-party hosted MCP
   connector authorized with OAuth 2.1 that gives AI agents five of the core tools without an API key.
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: false
+  label: Hosted service · you call their endpoint
+  confidence: medium
+  source:
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 image: https://www.1lookup.io/images/featured/pages/homepage.png
 url: https://raw.githubusercontent.com/api-evangelist/1lookup/refs/heads/main/apis.yml
 created: '2026-08-08'
