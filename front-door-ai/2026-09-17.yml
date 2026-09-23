@@ -1,0 +1,32 @@
+# Front Door AI Index — 1lookup — 2026-09-17
+# AI vocabulary counted on the provider's root page. Generated; do not edit.
+# `score` is null unless ownership is `own` — see front_door_ai.py.
+front_door_ai:
+  slug: 1lookup
+  lexicon_version: '1.0'
+  probed_at: '2026-09-17'
+  host: www.1lookup.io
+  final_host: www.1lookup.io
+  ownership: own
+  owner: 1lookup
+  shares_host_with: null
+  inherited_from: null
+  verdict: scored
+  score: 20
+  host_score: 20
+  density: 8.51
+  words: 2350
+  tiers:
+    agentic: 7
+    core: 12
+    model: 1
+  ambiguous: 11
+  top_terms:
+    AI: 12
+    agent: 6
+    intelligence: 5
+    AI agent: 4
+    Claude: 1
+    MCP: 1
+    fine-tune: 1
+    prompts: 1
