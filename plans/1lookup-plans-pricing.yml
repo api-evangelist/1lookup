@@ -166,3 +166,56 @@ x-evidence:
   - url: https://www.1lookup.io/pricing
     http_status: 200
     fetched: '2026-08-09'
+x-canonical:
+  generated: '2026-10-08'
+  vocabulary: all/0-working/economics/plans-canonical.yml
+  models:
+  - negotiated
+  - subscription
+  units:
+  - credit
+  - request
+  plans:
+  - name: Starter
+    access: other
+    model: subscription
+    model_how: stated
+    units:
+    - credit
+    - request
+    periods:
+    - month
+  - name: Growth
+    access: other
+    model: subscription
+    model_how: stated
+    units:
+    - credit
+    - request
+    periods:
+    - month
+  - name: Professional
+    access: other
+    model: subscription
+    model_how: stated
+    units:
+    - credit
+    - request
+    periods:
+    - month
+  - name: Enterprise
+    access: other
+    model: subscription
+    model_how: stated
+    units:
+    - credit
+    - request
+    periods:
+    - month
+  - name: Custom Enterprise
+    access: negotiated
+    model: negotiated
+    model_how: stated
+    units: []
+    periods:
+    - month
