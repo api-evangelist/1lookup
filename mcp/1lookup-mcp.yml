@@ -122,3 +122,18 @@ deployment:
   probe: gated
   checked: '2026-08-12'
   source: catalog MCP census
+rfc9728:
+  endpoint: https://app.1lookup.io/api/mcp
+  metadata_url: https://app.1lookup.io/.well-known/oauth-protected-resource
+  discovered_via: WWW-Authenticate resource_metadata on an anonymous POST initialize
+  fetched: '2026-09-25'
+  http_status: 200
+  content_type: application/json
+  document:
+    resource: https://app.1lookup.io/api/mcp
+    authorization_servers:
+    - https://app.1lookup.io
+    scopes_supported:
+    - lookup
+    bearer_methods_supported:
+    - header
