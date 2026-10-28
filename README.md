@@ -1,4 +1,4 @@
-# 1lookup
+# 1Lookup
 
 <!-- API-EVANGELIST-PROVENANCE:BEGIN -->
 > ### About this repository
@@ -64,4 +64,131 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-Data intelligence platform offering 34 products through one REST API covering phone/email/IP validation, fraud detection, B2B contact &amp; company data, SEO/web intelligence, and more. Also provides a hosted MCP server and llms.txt for AI/agent consumption.
+1Lookup is a self-serve data verification and enrichment platform for SMBs, exposing more than forty products through a single REST API and one universal credit balance. It validates phone numbers (line type, carrier, HLR reachability, number portability, DNC status, spam/scam reputation, fraud score), email addresses (syntax, MX, deliverability, disposable and role-based detection) and IP addresses (geolocation, VPN/proxy/Tor and datacenter detection), then extends into B2B company and contact data (firmographics, prospect and account search, contact append, skip trace), SEO and web intelligence (domain authority, backlinks, keyword metrics, audience reports, SERP and website scraping), social and media lookups, property data and audio transcription. The same engine powers a web dashboard with batch CSV validation, roughly twenty-five free rate-limited browser tools, and a first-party hosted MCP connector authorized with OAuth 2.1 that gives AI agents five of the core tools without an API key.
+
+**Areas:** Phone Validation · Email Verification · IP Intelligence · Fraud and Risk · Data Enrichment · B2B contact & company data · SEO / web analytics · Audio Transcription · MCP / agent-native · REST API
+
+## 1Lookup on APIs.io
+
+Everything profiled for 1Lookup is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/1lookup/](https://apis.io/providers/1lookup/)** — or go straight to one of the APIs or properties below.
+
+### APIs (3)
+
+- [1Lookup REST API](https://apis.io/apis/1lookup/1lookup-rest-api/) — RESTful API over HTTPS covering all 1Lookup products (phone/email/IP validation, fraud, enrichment, B2B data, SEO intelligence). API-key Bearer auth…
+- [1Lookup MCP Server](https://apis.io/apis/1lookup/1lookup-mcp-server/) — First-party hosted/remote MCP connector with OAuth 2.1 auth (authorization code + PKCE, dynamic client registration, single `lookup` scope) exposing 5 tools…
+- [1Lookup LLMs Index](https://apis.io/apis/1lookup/1lookup-llms-index/) — Machine-readable content indexes (llms.txt and llms-full.txt) for AI and answer engines, indexing the free tools, every product page, the comparison pages…
+
+### Published properties
+
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
+
+#### AsyncAPI (1)
+
+Event-driven and webhook contracts.
+
+- [1Lookup Webhooks](https://apis.io/asyncapis/1lookup/1lookup-webhooks/)
+
+#### MCP servers (1)
+
+Model Context Protocol servers that expose the API to agents.
+
+- [mcp](https://apis.io/servers/1lookup/mcp/)
+
+#### Security (4)
+
+Authentication, trust centre, and vulnerability disclosure.
+
+- [1Lookup Authentication](https://apis.io/security/1lookup/1lookup-authentication/)
+- [1Lookup Domain Security](https://apis.io/security/1lookup/1lookup-domain-security/)
+- [1Lookup Trust Center](https://apis.io/security/1lookup/1lookup-trust-center/)
+- [1Lookup Vulnerability Disclosure](https://apis.io/security/1lookup/1lookup-vulnerability-disclosure/)
+
+#### OAuth scopes (1)
+
+The permissions the API asks for.
+
+- [1Lookup Scopes](https://apis.io/scopes/1lookup/1lookup-scopes/)
+
+#### Plans and pricing (1)
+
+Published plans, tiers and prices.
+
+- [1Lookup Plans Pricing](https://apis.io/plans/1lookup/1lookup-plans-pricing/)
+
+#### Rate limits (1)
+
+Published request limits.
+
+- [1Lookup Rate Limits](https://apis.io/rate-limits/1lookup/1lookup-rate-limits/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
+
+- [Website](https://www.1lookup.io)
+- [Documentation](https://app.1lookup.io/api)
+- [Getting started](https://app.1lookup.io/api#getting-started)
+- [API reference](https://app.1lookup.io/api#endpoints)
+- [Pricing](https://www.1lookup.io/pricing)
+- [Sign up](https://app.1lookup.io/signup)
+- [Support](https://www.1lookup.io/contact)
+- [Blog](https://www.1lookup.io/blog)
+- [Security](https://www.1lookup.io/security)
+- [Compliance](https://www.1lookup.io/security)
+- [Terms of service](https://www.1lookup.io/terms)
+- [Privacy policy](https://www.1lookup.io/privacy)
+
+## API Evangelist rating
+
+**Kin Score 64.3** — strong · rubric 0.25.0 · scored 2026-10-23
+
+| Facet | Score |
+|---|---|
+| Discoverability | 81.7 |
+| Contract quality | 45.3 |
+| Contract governance | 18.2 |
+| Operational transparency | 50.0 |
+| Developer ergonomics | 66.1 |
+| Access clarity | 92.1 |
+
+**Agent readiness 55.4** — agent-native
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | — |
+| Reversibility Documented | — |
+| MCP Server | verified |
+| Auth Clarity | served (partial credit) |
+| Idempotency | documented (partial credit) |
+| Error Semantics | documented (partial credit) |
+| OpenAPI Examples | documented (partial credit) |
+| Rate Limit Signal | documented (partial credit) |
+| Event Surface Described | yes |
+| Agent Skills | derived (partial credit) |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | served (partial credit) |
+| Protected Resource Metadata | verified |
+| Dynamic Client Registration | yes |
+| Agentic Commerce | — |
+| Pagination Ratio | na |
+| Operation Distinctiveness | na |
+
+**Regulatory alignment 45.1** — Horizontal (data, software, accessibility, platform)
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/1lookup/](https://apis.io/providers/1lookup/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for 1Lookup: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/1lookup/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
