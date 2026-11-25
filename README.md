@@ -109,17 +109,24 @@ The permissions the API asks for.
 
 - [1Lookup Scopes](https://apis.io/scopes/1lookup/1lookup-scopes/)
 
-#### Plans and pricing (1)
+#### Plans and pricing (2)
 
 Published plans, tiers and prices.
 
 - [1Lookup Plans Pricing](https://apis.io/plans/1lookup/1lookup-plans-pricing/)
+- [1Lookup Price Estimates](https://apis.io/plans/1lookup/1lookup-price-estimates/)
 
 #### Rate limits (1)
 
 Published request limits.
 
 - [1Lookup Rate Limits](https://apis.io/rate-limits/1lookup/1lookup-rate-limits/)
+
+#### FinOps (1)
+
+What the API costs to run, by operation.
+
+- [1Lookup Finops](https://apis.io/finops/1lookup/1lookup-finops/)
 
 ## Where to find this API
 
@@ -140,18 +147,18 @@ Links to the company's own pages. This repository publishes no copy of their spe
 
 ## API Evangelist rating
 
-**Kin Score 64.3** — strong · rubric 0.25.0 · scored 2026-10-23
+**Kin Score 65.3** — strong · rubric 0.28.1 · scored 2026-11-21
 
 | Facet | Score |
 |---|---|
 | Discoverability | 81.7 |
 | Contract quality | 45.3 |
 | Contract governance | 18.2 |
-| Operational transparency | 50.0 |
+| Operational transparency | 45.2 |
 | Developer ergonomics | 66.1 |
-| Access clarity | 92.1 |
+| Access clarity | 100.0 |
 
-**Agent readiness 55.4** — agent-native
+**Agent readiness 57.0** — agent-native
 
 | Agent-readiness dimension | Result |
 |---|---|
@@ -166,7 +173,7 @@ Links to the company's own pages. This repository publishes no copy of their spe
 | Rate Limit Signal | documented (partial credit) |
 | Event Surface Described | yes |
 | Agent Skills | derived (partial credit) |
-| Well Known Catalog | — |
+| Well Known Catalog | yes |
 | Consent Identity | — |
 | Agent Card | — |
 | Dry Run Mode | — |
@@ -176,6 +183,10 @@ Links to the company's own pages. This repository publishes no copy of their spe
 | Agentic Commerce | — |
 | Pagination Ratio | na |
 | Operation Distinctiveness | na |
+| MCP Tool Quality | na |
+| Onboarding Descriptor | — |
+| Dns Aid Index | na |
+| Markdown Negotiation | na |
 
 **Regulatory alignment 45.1** — Horizontal (data, software, accessibility, platform)
 
